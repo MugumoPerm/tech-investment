@@ -61,7 +61,7 @@
 										</label>
 									</div>
 									<div class="w-50 text-md-right">
-										<a href="#">Forgot Password</a>
+										<a hx-get="{% url 'forgot_password' %}" hx-target="#authForms" hx-swap="innerHTML" style="cursor: pointer;" >Forgot Password</a>
 									</div>
 		            </div>
 		          </form>
