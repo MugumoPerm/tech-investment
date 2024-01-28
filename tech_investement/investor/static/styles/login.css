@@ -8270,7 +8270,7 @@ h1, h2, h3, h4, h5,
     display: block;
     width: 40px;
     height: 40px;
-    background: transparent;
+    background: #f35588;
     border: 1px solid rgba(0, 0, 0, 0.05);
     font-size: 16px;
     margin-right: 5px;
@@ -8278,7 +8278,7 @@ h1, h2, h3, h4, h5,
     .social-media .social-icon span {
       color: #999999; }
     .social-media .social-icon:hover, .social-media .social-icon:focus {
-      background: #f35588; }
+      background: #fd7e14; }
       .social-media .social-icon:hover span, .social-media .social-icon:focus span {
         color: #fff; }
 
