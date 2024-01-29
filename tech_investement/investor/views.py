@@ -17,6 +17,12 @@ def adminDashboard(request):
 def admin_logout(request):
     return render(request, 'admin_logout.html')
 
+def admin_users(request):
+    return render(request, 'admin_users.html')
+
+def admin_workplace(request):
+    return render(request, 'admin_workplace.html')
+
 #users
 def dashboard(request):
     return render(request, 'dashboard.html')
