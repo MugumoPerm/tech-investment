@@ -14,6 +14,9 @@ def adminDashboard(request):
     context = {'products': [100, 200, 30, 40, 500]}
     return render(request, 'adminDashboard.html', context)
 
+def admin_logout(request):
+    return render(request, 'admin_logout.html')
+
 #users
 def dashboard(request):
     return render(request, 'dashboard.html')
@@ -48,6 +51,15 @@ def register(request):
 
 def reset_password(request):
     return render(request, 'reset_password.html')
+
+def reset_confirm(request):
+    return render(request, 'reset_confirm.html')
+
+def reset_complete(request):
+    return render(request, 'reset_complete.html')
+
+def reset_done(request):
+    return render(request, 'reset_done.html')
 
 
 
