@@ -8,8 +8,7 @@ def generate_uuid():
     short_uuid = str(full_uuid).replace("-", "")
 
     # Use only the first 12 characters
-    result = short_uuid[:12]
+    code = short_uuid[:12]
 
-    return result
+    return code
 
-# print(generate_uuid())
