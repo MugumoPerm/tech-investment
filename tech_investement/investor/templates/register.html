@@ -17,7 +17,7 @@
 	<section class="ftco-section">
 		<div class="container">
 		<div class="error_messages">
-			{% if errors %}
+			{% if errors and profile_errors %}
 					  <div class="alert alert-danger" role="alert">
 						<strong>Error(s):</strong>
 						<ul>
@@ -26,12 +26,16 @@
 							  <li>{{ field }}: {{ error }}</li>
 							{% endfor %}
 						  {% endfor %}
+						{% if profile_errors %}
+						{% for field, error_list in profile_errors.items %}
+							{% for error in error_list %}
+							  <li>{{ field }}: {{ error }}</li>
+							{% endfor %}
+						{% endfor %}
+						{% endif %}
 						</ul>
 					  </div>
-				 <div class="alert alert-danger" role="alert">
-					{{ moreErrors.items }}
-				</div> 
-
+				
 			{% endif %}
 		</div>
 			<div class="row justify-content-center">

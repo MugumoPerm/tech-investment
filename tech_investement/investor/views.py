@@ -99,14 +99,15 @@ def register(request, *args, **kwargs):
 
             messages.success(request, 'Account created successfully.')
             return redirect('login')  # Redirect to your login page
-        else:
-            # Form validation failed, display error messages
-            messages.error(request, 'Registration failed. Please correct the errors below.')
+
     else:
+        # form error
         form = CreateUserForm()
         profile_form = UserProfileForm()
+        context = { "form":form, "profile_form":profile_form, "errors":form.errors, "errors":profile_form.errors}
+    context = { "form":form, "profile_form":profile_form, "errors":form.errors, "profile_errors":profile_form.errors }
 
-    return render(request, 'register.html', {'form': form, 'profile_form': profile_form})
+    return render(request, 'register.html', context)
 
 def reset_password(request):
     return render(request, 'reset_password.html')
