@@ -85,6 +85,16 @@ def logout_view(request):
     return redirect('login')
 
 def register(request, *args, **kwargs):
+    
+    #referral code
+    referral_code = str(kwargs.get('ref_code'))
+    try:
+        user = UserProfile.objects.get(code=referral_code)
+        request.session['ref_profile'] = user.id
+        print('id', user.id)
+    except:
+        user = None
+
     form = CreateUserForm()
     profile_form = UserProfileForm()
     if request.method == 'POST':

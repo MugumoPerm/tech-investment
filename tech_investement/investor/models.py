@@ -16,13 +16,13 @@ from .utils import generate_uuid
 class UserProfile(AbstractUser):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     username = models.CharField(max_length=12, unique=True, null=False, blank=False, default=True)
-    registration_number = models.CharField(max_length=20, unique=True)
+    registration_number = models.CharField(max_length=12, blank=True)
     email = models.EmailField(unique=True, null=False, blank=False)
     phone_number = models.IntegerField(unique=True, null=False, blank=False, default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
     code = models.CharField(max_length=12, blank=True)
     recommended_by = models.ForeignKey(
-        "self",
+        User,
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
@@ -48,14 +48,16 @@ class UserProfile(AbstractUser):
     )
 
     def __str__(self):
-        return f"{self.user.username} - {self.registration_number}"
+        return f"{self.user.username} - {self.code}"
 
     def save(self, *args, **kwargs):
         # Check if the user already has a code
-        if self.code == "":
+        if self.code == "" or self.registration_number == "":
             # Generate a new code for the user
             code = generate_uuid()
+            registration_number = generate_uuid()*2
             self.code = code
+            self.registration_number = registration_number
         super().save(*args, **kwargs)
 
         # Check if the user already has a UserAccount instance
