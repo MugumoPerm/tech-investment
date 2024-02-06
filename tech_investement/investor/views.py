@@ -85,6 +85,10 @@ def logout_view(request):
     return redirect('login')
 
 def register(request, *args, **kwargs):
+
+    profile_id = request.session.get('ref_profile')
+    print('profile_id', profile_id)
+
     
     #referral code
     referral_code = str(kwargs.get('ref_code'))
@@ -102,6 +106,14 @@ def register(request, *args, **kwargs):
         profile_form = UserProfileForm(request.POST)
 
         if form.is_valid() and profile_form.is_valid():
+            if profile_id is not None:
+                recommended_by_profile = UserProfile.objects.get(id=profile_id)
+                instance = form.save(commit=False)
+                registered_user = UserProfile.objects.get(id=instance.id)
+                registered_profile = UserProfile.objects.get(user=registered_user)
+                registered_profile.recommended_by = recommended_by_profile
+                registered_profile.save()
+
             user = form.save()
             profile = profile_form.save(commit=False)
             profile.user = user
