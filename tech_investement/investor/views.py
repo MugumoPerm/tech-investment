@@ -25,7 +25,7 @@ from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordFor
 def adminDashboard(request):
     message = messages.get_messages(request)
     context = {'message':message, 'products': [100, 200, 30, 40, 500]}
-    return render(request, 'adminDashboard.html', context)
+    return render(request, 'admin/adminDashboard.html', context)
 
 def admin_logout(request):
     return render(request, 'admin_logout.html')
@@ -78,13 +78,24 @@ def login_view(request):
         form = loginForm()
 
     message = messages.get_messages(request)
-    return render(request, 'login.html', {'form': form, 'messages': message})
+    return render(request, 'auth/login.html', {'form': form, 'messages': message})
 
 def logout_view(request):
     logout(request)
     return redirect('login')
 
 def register(request, *args, **kwargs):
+    code = str(kwargs.get('ref_code'))
+    try:
+        profile = UserProfile.objects.get(code=code)
+        request.session['ref_profile'] = profile.id
+    except:
+        pass
+
+    profile_id = request.session.get('ref_profile')
+    print('profile_id', profile_id)
+
+    
     form = CreateUserForm()
     profile_form = UserProfileForm()
     if request.method == 'POST':
@@ -92,24 +103,45 @@ def register(request, *args, **kwargs):
         profile_form = UserProfileForm(request.POST)
 
         if form.is_valid() and profile_form.is_valid():
-            user = form.save()
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            profile.save()
+            if profile_id is not None:
+                recommender_id = UserProfile.objects.get(id=profile_id)
+                recommender_username = recommender_id.username
+                #save the user
+                user = form.save()
+                profile = profile_form.save(commit=False)
+                profile.user = user
+                profile.save()
+
+                # create user instance
+                User_instance = User.objects.get(username=recommender_username)
+                # create a recommendation instance
+                profile_instance = UserProfile.objects.get(username=user.username)
+
+                # set the user instance as the recommender
+                profile_instance.recommended_by = User_instance
+                # save the profile
+                profile_instance.save()
+
+                # add the user to the recommender's list of recommended users
+                User_instance.recommended.add(profile_instance)
+                # save the user
+                User_instance.save()
+
 
             messages.success(request, 'Account created successfully.')
             return redirect('login')  # Redirect to your login page
-        else:
-            # Form validation failed, display error messages
-            messages.error(request, 'Registration failed. Please correct the errors below.')
+
     else:
+        # form error
         form = CreateUserForm()
         profile_form = UserProfileForm()
+        context = { "form":form, "profile_form":profile_form, "errors":form.errors, "errors":profile_form.errors}
+    context = { "form":form, "profile_form":profile_form, "errors":form.errors, "profile_errors":profile_form.errors }
 
-    return render(request, 'register.html', {'form': form, 'profile_form': profile_form})
+    return render(request, 'auth/register.html', context)
 
 def reset_password(request):
-    return render(request, 'reset_password.html')
+    return render(request, 'auth/reset_password.html')
 
 def reset_confirm(request):
     return render(request, 'reset_confirm.html')
@@ -142,7 +174,14 @@ def withdraw(request):
 def assets(request):
     return render(request, 'assets.html')
 
-
+def recommended_users(request):
+    profile = []
+    for prof in UserProfile.objects.all():
+        if prof.recommended_by == request.user:
+            profile.append(prof)
+        #count the number of recommended users
+    recommended_users = len(profile)
+    return HttpResponse('recommended_users: ' + str(recommended_users))
 
 
 #ajax requests

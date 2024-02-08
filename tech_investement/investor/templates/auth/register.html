@@ -17,7 +17,7 @@
 	<section class="ftco-section">
 		<div class="container">
 		<div class="error_messages">
-			{% if errors %}
+			{% if errors and profile_errors %}
 					  <div class="alert alert-danger" role="alert">
 						<strong>Error(s):</strong>
 						<ul>
@@ -26,12 +26,16 @@
 							  <li>{{ field }}: {{ error }}</li>
 							{% endfor %}
 						  {% endfor %}
+						{% if profile_errors %}
+						{% for field, error_list in profile_errors.items %}
+							{% for error in error_list %}
+							  <li>{{ field }}: {{ error }}</li>
+							{% endfor %}
+						{% endfor %}
+						{% endif %}
 						</ul>
 					  </div>
-				 <div class="alert alert-danger" role="alert">
-					{{ moreErrors.items }}
-				</div> 
-
+				
 			{% endif %}
 		</div>
 			<div class="row justify-content-center">
@@ -51,7 +55,7 @@
 							<div class="text w-100">
 								<h2>Welcome to sign up</h2>
 								<p>Have an account?</p>
-								<a class="btn btn-white btn-outline-white" hx-get="{% url 'login' %}" hx-target="#authForms" hx-swap="innerHTML">sign in</a>
+								<a class="btn btn-white btn-outline-white" hx-get="{% url 'login' %}" hx-target="#authForms" hx-swap="innerHTML" hx-push-url="true">sign in</a>
 							</div>
 			      </div>
 						<div class="login-wrap p-4 p-lg-5">
