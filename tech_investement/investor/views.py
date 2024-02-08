@@ -25,7 +25,7 @@ from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordFor
 def adminDashboard(request):
     message = messages.get_messages(request)
     context = {'message':message, 'products': [100, 200, 30, 40, 500]}
-    return render(request, 'adminDashboard.html', context)
+    return render(request, 'admin/adminDashboard.html', context)
 
 def admin_logout(request):
     return render(request, 'admin_logout.html')
@@ -78,7 +78,7 @@ def login_view(request):
         form = loginForm()
 
     message = messages.get_messages(request)
-    return render(request, 'login.html', {'form': form, 'messages': message})
+    return render(request, 'auth/login.html', {'form': form, 'messages': message})
 
 def logout_view(request):
     logout(request)
@@ -122,6 +122,12 @@ def register(request, *args, **kwargs):
                 # save the profile
                 profile_instance.save()
 
+                # add the user to the recommender's list of recommended users
+                User_instance.recommended.add(profile_instance)
+                # save the user
+                User_instance.save()
+
+
             messages.success(request, 'Account created successfully.')
             return redirect('login')  # Redirect to your login page
 
@@ -132,10 +138,10 @@ def register(request, *args, **kwargs):
         context = { "form":form, "profile_form":profile_form, "errors":form.errors, "errors":profile_form.errors}
     context = { "form":form, "profile_form":profile_form, "errors":form.errors, "profile_errors":profile_form.errors }
 
-    return render(request, 'register.html', context)
+    return render(request, 'auth/register.html', context)
 
 def reset_password(request):
-    return render(request, 'reset_password.html')
+    return render(request, 'auth/reset_password.html')
 
 def reset_confirm(request):
     return render(request, 'reset_confirm.html')
@@ -168,7 +174,14 @@ def withdraw(request):
 def assets(request):
     return render(request, 'assets.html')
 
-
+def recommended_users(request):
+    profile = []
+    for prof in UserProfile.objects.all():
+        if prof.recommended_by == request.user:
+            profile.append(prof)
+        #count the number of recommended users
+    recommended_users = len(profile)
+    return HttpResponse('recommended_users: ' + str(recommended_users))
 
 
 #ajax requests

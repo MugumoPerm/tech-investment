@@ -31,7 +31,6 @@ class UserProfile(AbstractUser):
         help_text="The user who recommended this user.",
     )
 
-    
     groups = models.ManyToManyField(
         "auth.Group",
         blank=True,
@@ -64,6 +63,15 @@ class UserProfile(AbstractUser):
         if not hasattr(self, 'UserAccount'):
             # Create a new Wallet instance for the user
             UserAccount.objects.create(user=self, username=self.username, amount_paid=0, balance=0)
+        
+        # list of recommended profiles
+        def get_recommended_profiles(self):
+            qs = UserProfile.objects.all()
+            my_recommended_profiles = []
+            for profile in qs:
+                if profile.recommended_by == self.user:
+                    my_recommended_profiles.append(profile)
+            return my_recommended_profiles
 
 
 class UserAccount(models.Model):

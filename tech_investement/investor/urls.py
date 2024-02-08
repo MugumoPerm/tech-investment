@@ -9,10 +9,11 @@ urlpatterns = [
     path('user_profile/', views.user_profile, name='user_profile'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('users/', views.users, name='users'),
-    
+    path('recommended_users/', views.recommended_users, name='recommended_users'),
+
     #authentications
     path('', views.login_view, name='login'),
-    path('reset_password/', auth_views.PasswordResetView.as_view(template_name='reset_password.html'), name='reset_password'),
+    path('reset_password/', auth_views.PasswordResetView.as_view(template_name='auth/reset_password.html'), name='reset_password'),
     path('register/', views.register, name='register'),
     path('register/<str:ref_code>/', views.register, name='register'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
