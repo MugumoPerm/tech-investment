@@ -208,7 +208,7 @@ async function refreshChart() {
 }
 
 // Automatically refresh the chart every 60 seconds (adjust as needed)
-setInterval(refreshChart, 60000);
+setInterval(refreshChart, 600000);
 
 
 
