@@ -48,7 +48,7 @@ class UserProfile(AbstractUser):
     )
 
     def __str__(self):
-        return f"{self.user.username} - {self.code}"
+        return f"{self.username} - {self.code}"
 
     def save(self, *args, **kwargs):
         # Check if the user already has a code

@@ -85,20 +85,17 @@ def logout_view(request):
     return redirect('login')
 
 def register(request, *args, **kwargs):
+    code = str(kwargs.get('ref_code'))
+    try:
+        profile = UserProfile.objects.get(code=code)
+        request.session['ref_profile'] = profile.id
+    except:
+        pass
 
     profile_id = request.session.get('ref_profile')
     print('profile_id', profile_id)
 
     
-    #referral code
-    referral_code = str(kwargs.get('ref_code'))
-    try:
-        user = UserProfile.objects.get(code=referral_code)
-        request.session['ref_profile'] = user.id
-        print('id', user.id)
-    except:
-        user = None
-
     form = CreateUserForm()
     profile_form = UserProfileForm()
     if request.method == 'POST':
@@ -107,17 +104,23 @@ def register(request, *args, **kwargs):
 
         if form.is_valid() and profile_form.is_valid():
             if profile_id is not None:
-                recommended_by_profile = UserProfile.objects.get(id=profile_id)
-                instance = form.save(commit=False)
-                registered_user = UserProfile.objects.get(id=instance.id)
-                registered_profile = UserProfile.objects.get(user=registered_user)
-                registered_profile.recommended_by = recommended_by_profile
-                registered_profile.save()
+                recommender_id = UserProfile.objects.get(id=profile_id)
+                recommender_username = recommender_id.username
+                #save the user
+                user = form.save()
+                profile = profile_form.save(commit=False)
+                profile.user = user
+                profile.save()
 
-            user = form.save()
-            profile = profile_form.save(commit=False)
-            profile.user = user
-            profile.save()
+                # create user instance
+                User_instance = User.objects.get(username=recommender_username)
+                # create a recommendation instance
+                profile_instance = UserProfile.objects.get(username=user.username)
+
+                # set the user instance as the recommender
+                profile_instance.recommended_by = User_instance
+                # save the profile
+                profile_instance.save()
 
             messages.success(request, 'Account created successfully.')
             return redirect('login')  # Redirect to your login page
