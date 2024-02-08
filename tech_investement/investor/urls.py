@@ -12,14 +12,14 @@ urlpatterns = [
     path('recommended_users/', views.recommended_users, name='recommended_users'),
 
     #authentications
-    path('', views.login_view, name='login'),
-    path('reset_password/', auth_views.PasswordResetView.as_view(template_name='auth/reset_password.html'), name='reset_password'),
-    path('register/', views.register, name='register'),
-    path('register/<str:ref_code>/', views.register, name='register'),
-    path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('reset_complete/', auth_views.PasswordResetCompleteView.as_view(), name='reset_complete'),
-    path('reset_done/', auth_views.PasswordResetDoneView.as_view(), name='reset_done'),
-    path('logout/', views.logout_view, name='logout'),
+    path('auth/login', views.login_view, name='login'),
+    path('auth/reset_password/', auth_views.PasswordResetView.as_view(template_name='auth/reset_password.html'), name='reset_password'),
+    path('auth/register/', views.register, name='register'),
+    path('auth/register/<str:ref_code>/', views.register, name='register'),
+    path('auth/reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
+    path('auth/reset_complete/', auth_views.PasswordResetCompleteView.as_view(), name='reset_complete'),
+    path('auth/reset_done/', auth_views.PasswordResetDoneView.as_view(), name='reset_done'),
+    path('auth/logout/', views.logout_view, name='logout'),
     
     #transactions
     path('transactions_history/', views.transactions_history, name='transactions_history'),
