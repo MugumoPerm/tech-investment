@@ -103,6 +103,12 @@ def register(request, *args, **kwargs):
         profile_form = UserProfileForm(request.POST)
 
         if form.is_valid() and profile_form.is_valid():
+            #save the user
+            user = form.save()
+            profile = profile_form.save(commit=False)
+            profile.user = user
+            profile.save()
+
             if profile_id is not None:
                 recommender_id = UserProfile.objects.get(id=profile_id)
                 recommender_username = recommender_id.username
@@ -126,6 +132,9 @@ def register(request, *args, **kwargs):
                 User_instance.recommended.add(profile_instance)
                 # save the user
                 User_instance.save()
+                
+                # clear the session
+                del request.session['ref_profile']
 
 
             messages.success(request, 'Account created successfully.')
