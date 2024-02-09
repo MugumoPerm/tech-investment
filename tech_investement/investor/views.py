@@ -42,9 +42,27 @@ def adminLogin(request):
         form = loginForm()
     return render(request, 'admin/admin_login.html', {'form': form, 'messages': messages.get_messages(request)})
 
+# @login_required(login_url='admin_login')
 def adminDashboard(request):
     message = messages.get_messages(request)
-    context = {'message':message, 'products': [100, 200, 30, 40, 500]}
+    #calculate how many users in the database
+    users = User.objects.all()
+    user_count = len(users)
+    
+
+    #calculate total amount of money in the system
+    total_amount = 0
+    for user in UserProfile.objects.all():
+        total_amount += user.UserAccount.balance
+    total_amount = total_amount
+
+
+    #get the total number of users in UserProfiles
+    user_profiles = UserProfile.objects.all()
+    user_profiles_count = len(user_profiles)
+
+
+    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
 
 def admin_logout(request):
@@ -61,7 +79,23 @@ def admin_workplace(request):
 
 #users
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    recommended_users = []
+    for prof in UserProfile.objects.all():
+        if prof.recommended_by == request.user:
+            recommended_users.append(prof)
+        #count the number of recommended users
+    recommended_users = len(recommended_users)
+    bonus = 0
+
+    if UserProfile.objects.get(username=request.user.username):
+        user_profile = UserProfile.objects.get(username=request.user.username)
+    else:
+        user_profile = None
+
+
+
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'products': [100, 200, 30, 40, 500]}
+    return render(request, 'user/dashboard.html', context)
 
 def users(request):
     return render(request, 'users.html')
@@ -90,7 +124,7 @@ def login_view(request):
             if user:
                 login(request, user)
                 messages.success(request, 'You have successfully logged in')
-                return redirect('adminDashboard')
+                return redirect('dashboard')
             else:
                 messages.error(request, 'Invalid username or password')
                 return redirect('login')
@@ -102,6 +136,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
+    messages.success(request, 'You have successfully logged out')
     return redirect('login')
 
 def register(request, *args, **kwargs):
