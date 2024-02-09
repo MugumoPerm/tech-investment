@@ -1,0 +1,48 @@
+{% extends 'layout.html' %}
+{% load static %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block links %}
+	<!-- <link rel="stylesheet" href="{% static 'styles/login.css' %}"> -->
+	<link rel="stylesheet" href="{% static 'styles/adminDashboard.css' %}">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+{% endblock links %}
+
+{% block body %}
+<!--  -->
+	<!-- message -->
+{% if messages %}
+	{% for message in messages %}
+		<div class="alert alert-{{ message.tags }}">
+			{{ message }}
+		</div>
+	{% endfor %}
+{% endif %}
+<h1>Dashboard</h1>
+	<p>Welcome to the dashboard</p>
+	<p>recommended users: {{recommended_users}} </p>
+
+
+
+<p>User: {{user}}</p>
+
+<p>Referral bonus: {{referral_bonus}}</p>
+
+{% if user_profile %}
+
+	<p>	balance:{{user_profile.UserAccount.balance}}</p><br>
+
+{% else %}
+	
+	<h4>(null)</h4>
+
+{% endif %}
+
+
+		  <a href="{% url "logout" %}" ><span style="color: red;" class="material-icons-outlined">logout</span></a>
+
+{% endblock body %}
+
