@@ -26,12 +26,12 @@
 					<div class="wrap d-md-flex">
 						<div style="background: linear-gradient(135deg, #e72828 0%, #172134 100%);;" class="text-wrap p-4 p-lg-5 text-center d-flex align-items-center order-md-last">
 							<div class="text w-100">
-								<div class="message">
+								<div style="top: -1rem; position: relative;" class="message">
 											{% for message in messages %}
 											{% if "success" in message.tags %}
-											<span class='success_message_box' id='message' >{{ message }}</span>
+											<span style="background-color: limegreen; padding: 5px;" class='success_message_box' id='message' >{{ message }}</span>
 											{% else %}
-												<span class='error_message_box'>{{ message }}</span>		
+												<span style="background-color: #ff3434;" class='error_message_box'>{{ message }}</span>		
 											{% endif %}
 											{% endfor %}
 								
