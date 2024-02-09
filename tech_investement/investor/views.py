@@ -22,13 +22,36 @@ from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordFor
 
 #Admin
 # @login_required(login_url='login')
+def adminLogin(request):
+    if request.method == 'POST':
+        form = loginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+
+            # authenticate user
+            user = authenticate(username=username, password=password)
+            if user:
+                login(request, user)
+                messages.success(request, 'You have successfully logged in')
+                return redirect('adminDashboard')
+            else:
+                messages.error(request, 'Invalid username or password')
+                return redirect('admin-login')
+    else:
+        form = loginForm()
+    return render(request, 'admin/admin_login.html', {'form': form, 'messages': messages.get_messages(request)})
+
 def adminDashboard(request):
     message = messages.get_messages(request)
     context = {'message':message, 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
 
 def admin_logout(request):
-    return render(request, 'admin_logout.html')
+    logout(request)
+    messages.success(request, 'You have successfully logged out')
+    
+    return redirect('admin_login')
 
 def admin_users(request):
     return render(request, 'admin_users.html')
@@ -55,9 +78,6 @@ def user_profile(request):
 
 
 #authentications
-def adminLogin(request):
-    return render(request, 'adminLogin.html')
-
 def login_view(request):
     if request.method == 'POST':
         form = loginForm(request.POST)
@@ -129,9 +149,9 @@ def register(request, *args, **kwargs):
                 profile_instance.save()
 
                 # add the user to the recommender's list of recommended users
-                User_instance.recommended.add(profile_instance)
+                # User_instance.recommended.add(profile_instance)
                 # save the user
-                User_instance.save()
+                # User_instance.save()
                 
                 # clear the session
                 del request.session['ref_profile']
