@@ -32,11 +32,11 @@ urlpatterns = [
     path('assets/', views.assets, name='assets'),
 
     #admin
-    path('admin_login/', views.adminLogin, name='admin_login'),
-    path('adminDashboard', views.adminDashboard, name='adminDashboard'),
-    path('admin_workplace/', views.admin_workplace, name='admin_workplace'),
-    path('admin_logout/', views.admin_logout, name='admin_logout'),
-    path('admin_users/', views.admin_users, name='admin_users'),
+    path('staff/admin/auth/admin_login/', views.adminLogin, name='admin_login'),
+    path('staff/admin/auth/adminDashboard', views.adminDashboard, name='adminDashboard'),
+    path('staff/admin/auth/admin_workplace/', views.admin_workplace, name='admin_workplace'),
+    path('staff/admin/auth/admin_logout/', views.admin_logout, name='admin_logout'),
+    path('staff/admin/auth/admin_users/', views.admin_users, name='admin_users'),
     #charts(ajax)
     path('get_chart_data/', views.get_chart_data, name='get_chart_data'),
 
