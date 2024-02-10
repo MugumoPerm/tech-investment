@@ -38,13 +38,13 @@
               <a href="#" class="nav_menu_link">account</a>
             </li>
             <li class="nav_menu_item">
-              <a href="#" class="nav_menu_link">about</a>
+              <a href="#about" class="nav_menu_link">about</a>
             </li>
             <li class="nav_menu_item">
-              <a href="#" class="nav_menu_link">service</a>
+              <a href="{% url 'login' %}" class="nav_menu_link">Login</a>
             </li>
             <li class="nav_menu_item">
-              <a href="#" class="nav_menu_link">contact</a>
+              <a href="{% url 'register' %}" class="nav_menu_link">Register</a>
             </li>
           </ul>
         </div>
@@ -70,12 +70,16 @@
             </p>
 
             <div class="btn_wrapper">
+				<a href="{% url 'login' %}"  >
               <button class="btn view_more_btn">
-                view all pages <i class="ri-arrow-right-line"></i>
+                Invest Now <i class="ri-arrow-right-line"></i>
               </button>
+</a>
+		<a href="#about">
+              <button class="btn documentation_btn">About</button>
+		</a>  
 
-              <button class="btn documentation_btn">documentation</button>
-            </div>
+			</div>
           </div>
           <div class="grid-item-2">
             <div class="team_img_wrapper">
@@ -86,7 +90,7 @@
       </div>
     </section>
 
-    <section class="wrapper">
+    <section class="wrapper" id="about">
       <div class="container" data-aos="fade-up" data-aos-duration="1000">
         <div class="grid-cols-3">
           <div class="grid-col-item">
