@@ -78,6 +78,11 @@ def admin_workplace(request):
     return render(request, 'admin_workplace.html')
 
 #users
+def landing_page(request):
+    return render(request,'user/landing_page.html')
+
+
+@login_required(login_url='login')
 def dashboard(request):
     recommended_users = []
     for prof in UserProfile.objects.all():
@@ -112,6 +117,7 @@ def user_profile(request):
 
 
 #authentications
+
 def login_view(request):
     if request.method == 'POST':
         form = loginForm(request.POST)
