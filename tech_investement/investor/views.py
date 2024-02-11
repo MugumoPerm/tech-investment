@@ -90,7 +90,7 @@ def dashboard(request):
             recommended_users.append(prof)
         #count the number of recommended users
     recommended_users = len(recommended_users)
-    bonus = 0
+    bonus = UserAccount.objects.get(username=request.user).bonus
 
     if UserProfile.objects.get(username=request.user.username):
         user_profile = UserProfile.objects.get(username=request.user.username)
@@ -244,6 +244,26 @@ def deposit(request):
             balance.save()
             
             # give a 25% bonus to the user who recommended this user after deposit
+            recommended_by = UserProfile.objects.get(username=request.user)
+            recommender = recommended_by.recommended_by
+            recommender_account = UserAccount.objects.get(username=recommender)
+            if recommender_account.balance == deposit:
+                bonus = deposit * 25
+                recommender_account.bonus += bonus / 100
+                recommender_account.save()
+            else:
+                pass
+
+            # give only one time bonus to the user who recommended this user after deposit 
+            # recommended_by = UserProfile.objects.get(username=request.user)
+            # recommender = recommended_by.recommended_by
+            # recommender_account = UserAccount.objects.get(username=recommender)
+            # bonus = deposit * 25
+            # if recommender_account.bonus == 0:
+            #     recommender_account.bonus += bonus / 100
+            #     recommender_account.save()
+            # else:
+            #     pass
 
 
             messages.success(request, 'Deposit successful')
