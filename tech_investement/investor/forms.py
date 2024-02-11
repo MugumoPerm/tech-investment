@@ -69,4 +69,10 @@ class StkpushForm(forms.Form):
 
     pass
 
+# deposit form
+class depositForm(forms.Form):
+    amount = forms.IntegerField()
+
+    class Meta:
+        fields = ["amount"]
 

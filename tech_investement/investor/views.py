@@ -235,7 +235,24 @@ def transactions_completed(request):
     return render(request, 'transactions_completed.html')
 
 def deposit(request):
-    return render(request, 'deposit.html')
+    if request.method == 'POST':
+        form = deposit_form(request.POST)
+        if form.is_valid():
+            deposit = form.cleaned_data['balance']
+            balance = UserAccount.objects.get(username=request.user )
+            balance.balance += deposit
+            balance.save()
+            
+            # give a 25% bonus to the user who recommended this user after deposit
+
+
+            messages.success(request, 'Deposit successful')
+            return redirect('deposit')
+    else:
+        form = deposit_form()
+
+    context = {'form': form}   
+    return render(request, 'user/deposit.html', context)
 
 def withdraw(request):
     return render(request, 'withdraw.html')
