@@ -247,12 +247,15 @@ def deposit(request):
             recommended_by = UserProfile.objects.get(username=request.user)
             recommender = recommended_by.recommended_by
             recommender_account = UserAccount.objects.get(username=recommender)
-            if recommender_account.balance == deposit:
+            recommended_account = UserAccount.objects.get(username=request.user)
+            if recommended_account.balance == 0:
+                print('balance is:', recommended_account.balance)
                 bonus = deposit * 25
                 recommender_account.bonus += bonus / 100
                 recommender_account.save()
+                balance.save()
             else:
-                pass
+                balance.save()
 
             # give only one time bonus to the user who recommended this user after deposit 
             # recommended_by = UserProfile.objects.get(username=request.user)

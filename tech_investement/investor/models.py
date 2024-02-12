@@ -91,7 +91,7 @@ class Transaction(models.Model):
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date = models.DateTimeField(auto_now_add=True)
     transaction_type = models.CharField(max_length=12, null=False, blank=False, default=True)
-
+    transaction_id = models.CharField(max_length=12, null=False, blank=False, default=True)
     def __str__(self):
         return f"{self.user.username} - Amount Paid: {self.amount_paid}, Balance: {self.balance}, Date: {self.date}, Type: {self.transaction_type}"
 
