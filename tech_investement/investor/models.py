@@ -79,6 +79,35 @@ class UserAccount(models.Model):
     username = models.CharField(max_length=12, unique=True, null=False, blank=False, default=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-
+    bonus = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    transactions_id = models.CharField(max_length=12)
+    date = models.DateTimeField(auto_now_add=True)
+    bonus_given = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.user.username} - Amount Paid: {self.amount_paid}, Balance: {self.balance}"
+
+# deposit and withdraw
+
+
+# assets
+class Asset(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='Asset')
+    asset_name = models.CharField(max_length=12, null=False, blank=False, default=True)
+    asset_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    # date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - Asset Name: {self.asset_name}, Asset Value: {self.asset_value}"
+
+# # stocks
+# class Stock(models.Model):
+#     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='Stock')
+#     stock_name = models.CharField(max_length=12, null=False, blank=False, default=True)
+#     stock_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+#     date = models.DateTimeField(auto_now_add=True)
+
+#     def __str__(self):
+#         return f"{self.user.username} - Stock Name: {self.stock_name}, Stock Value: {self.stock_value}, Date: {self.date}"
+
+
+

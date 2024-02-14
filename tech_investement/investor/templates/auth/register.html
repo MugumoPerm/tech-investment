@@ -17,7 +17,7 @@
 	<section class="ftco-section">
 		<div class="container">
 		<div class="error_messages">
-			{% if errors and profile_errors %}
+			{% if errors or profile_errors %}
 					  <div class="alert alert-danger" role="alert">
 						<strong>Error(s):</strong>
 						<ul>
