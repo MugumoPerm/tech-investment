@@ -23,16 +23,16 @@ Deposit
 <div class="container">
 	<div class="row">
 		<div class="col-md-6">
-			<h2>Deposit</h2>
-			<form method="POST" action="{% url 'deposit' %}">
+			<h2>Paste Transaction ID</h2>
+			<form method="POST" action="{% url 'transactions_id' %}">
 				{% csrf_token %}
 				<div class="form-group">
 					<label for="amount">Transaction ID</label>
 					
-					{% render_field form.balance class='form-control' placeholder='Username' %}
+					{% render_field form.transactions_id class='form-control' placeholder='Transaction id' %}
 					<!-- <input type="text" class="form-control" id="amount" name="amount" required> -->
 				</div>
-				<button type="submit" class="btn btn-primary">Deposit</button>
+				<button type="submit" class="btn btn-primary">submit</button>
 			</form>
 		</div>
 	</div>

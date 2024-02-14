@@ -40,10 +40,10 @@ class reset_passwordForm(forms.Form):
     pass
 
 # transaction
-class transaction(forms.ModelForm):
+class transactions_id_form(forms.ModelForm):
     class Meta:
         model = UserAccount
-        fields = ['transaction_id']
+        fields = ['transactions_id']
 
 class deposit_form(forms.ModelForm):
     class Meta:

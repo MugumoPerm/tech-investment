@@ -16,7 +16,7 @@ from django.contrib.auth import get_user_model
 from .models import UserProfile, UserAccount
 
 # import forms
-from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm
+from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form
 
 # Create your views here.
 
@@ -64,6 +64,8 @@ def adminDashboard(request):
 
     context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
+
+
 
 def admin_logout(request):
     logout(request)
@@ -225,9 +227,21 @@ def reset_done(request):
 
 
 #transactions
-def transactions(request):
-    
-    return render(request, 'admin/deposit.html')
+def transactions_id(request):
+    form = transactions()
+    if request.method == 'POST':
+        form = transactions(request.POST)
+        if form.is_valid():
+            transaction_id = form.cleaned_data['transactions_id']
+            transaction = UserAccount.objects.get(username=request.user)
+            transaction.transactions_id = transaction_id
+            transaction.save()
+            messages.success(request, 'Transaction ID saved successfully')
+            return redirect('dashboard')
+    else:
+        form = transactions()
+
+    return render(request, 'user/deposit.html', {'form': form})
 
 def transactions_history(request):
     return render(request, 'transactions_history.html')
@@ -240,6 +254,7 @@ def transactions_completed(request):
 
 def deposit(request):
     if request.method == 'POST':
+        transaction_id_form = transactions_id_form(request.POST)
         form = deposit_form(request.POST)
         if form.is_valid():
             deposit = form.cleaned_data['balance']
@@ -277,9 +292,10 @@ def deposit(request):
             return redirect('deposit')
     else:
         form = deposit_form()
+        transaction_id_form = transactions_id_form()
 
-    context = {'form': form}   
-    return render(request, 'user/deposit.html', context)
+    context = {'form': form, 'transaction_id_form': transaction_id_form}   
+    return render(request, 'admin/deposit.html', context)
 
 def withdraw(request):
     return render(request, 'withdraw.html')
@@ -304,4 +320,13 @@ def get_chart_data(request):
     updated_data = [12, 99, 0, 6, 70]
     return JsonResponse({'data': updated_data})
 
-
+def get_transaction(request):
+    # get the posted data
+    if request.method == 'POST':
+            form = transactions_id_form(request.POST)
+            if form.is_valid():
+                transaction_id = form.cleaned_data['transactions_id']
+                transaction = UserAccount.objects.get(transactions_id = transaction_id)
+                return HttpResponse('username: ' + transaction.username + ' - ' + 'balance: ' + str(transaction.balance))
+            else:
+                return HttpResponse('invalid transaction id')

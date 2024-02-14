@@ -80,7 +80,7 @@ class UserAccount(models.Model):
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     bonus = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    transaction_id = models.CharField(max_length=12, default=True)
+    transactions_id = models.CharField(max_length=12)
     date = models.DateTimeField(auto_now_add=True)
     bonus_given = models.BooleanField(default=False)
     def __str__(self):

@@ -23,24 +23,26 @@ urlpatterns = [
     path('auth/logout/', views.logout_view, name='logout'),
     
     #transactions
-    path('staff/admin/auth/transactions/', views.transactions, name='transactions'),
+    path('transactions/id', views.transactions_id, name='transactions_id'),
     path('transactions_history/', views.transactions_history, name='transactions_history'),
     path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),
-    path('deposit/', views.deposit, name='deposit'),
+    path('staff/admin/auth/deposit', views.deposit, name='deposit'),
     path('withdraw/', views.withdraw, name='withdraw'),
     
     #assets
     path('assets/', views.assets, name='assets'),
 
     #admin
+    
     path('staff/admin/auth/admin_login/', views.adminLogin, name='admin_login'),
     path('staff/admin/auth/adminDashboard', views.adminDashboard, name='adminDashboard'),
     path('staff/admin/auth/admin_workplace/', views.admin_workplace, name='admin_workplace'),
     path('staff/admin/auth/admin_logout/', views.admin_logout, name='admin_logout'),
     path('staff/admin/auth/admin_users/', views.admin_users, name='admin_users'),
+
     #charts(ajax)
     path('get_chart_data/', views.get_chart_data, name='get_chart_data'),
-
+    path('get_transaction/', views.get_transaction, name='get_transaction'),
     ]
 

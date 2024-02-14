@@ -19,9 +19,13 @@ admin Deposit
 {% block body %}
 
 <h1>Deposit Form</h1>
-    <form id="search-form">
-        <input type="text" id="transaction-id" placeholder="Enter Transaction ID">
-        <button type="button" id="search-button" hx-get="{% url 'transactions' %}" hx-target="#result">Search</button>
+<form id="search-form" action="" method="post" > 
+        <!-- <input type="text" id="transaction-id" placeholder="Enter Transaction ID" name="transaction_id"> -->
+		{% csrf_token %}
+
+		<label for="transaction_id">Transaction ID:</label>
+		{{ transaction_id_form.as_p }}
+        <button type="button" id="search-button" hx-POST="{% url 'get_transaction' %}" hx-target="#result">Search</button>
     </form>
     <div id="result"></div>
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
