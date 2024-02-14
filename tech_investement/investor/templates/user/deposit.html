@@ -1,0 +1,41 @@
+{% extends 'layout.html' %}
+
+{% load widget_tweaks %}
+
+{% load static %}
+
+{% block title %}
+
+Deposit
+
+{% endblock %}
+
+{% block body %}
+
+{% if messages %}
+	{% for message in messages %}
+		<div class="alert alert-{{ message.tags }}">
+			{{ message }}
+		</div>
+	{% endfor %}
+{% endif %}
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-6">
+			<h2>Paste Transaction ID</h2>
+			<form method="POST" action="{% url 'transactions_id' %}">
+				{% csrf_token %}
+				<div class="form-group">
+					<label for="amount">Transaction ID</label>
+					
+					{% render_field form.transactions_id class='form-control' placeholder='Transaction id' %}
+					<!-- <input type="text" class="form-control" id="amount" name="amount" required> -->
+				</div>
+				<button type="submit" class="btn btn-primary">submit</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+{% endblock body %}

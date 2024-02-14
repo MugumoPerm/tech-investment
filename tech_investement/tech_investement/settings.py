@@ -25,7 +25,12 @@ SECRET_KEY = 'django-insecure-ixbwzzns+pcr206)uam#@gftm&h3!k711!x290@z%w-=z#e=5+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["192.168.100.119", "127.0.0.1","192.168.16.102","192.168.16.105","192.168.100.119","192.168.43.53"]
+# <<<<<<< master
+ALLOWED_HOSTS = ["192.168.100.119", "127.0.0.1","192.168.16.102","192.168.16.105","192.168.100.119","192.168.43.53","10.0.39.242", ".vercel.app"]
+# =======
+
+# ALLOWED_HOSTS = ["192.168.100.119", "127.0.0.1","192.168.16.102","mykey.pythonanywhere.com"]
+# >>>>>>> main
 
 
 # Application definition
@@ -47,6 +52,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -127,6 +133,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = '~/tech-investment/tech_investement/investor/static'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field

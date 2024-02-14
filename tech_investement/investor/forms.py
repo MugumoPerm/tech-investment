@@ -40,10 +40,15 @@ class reset_passwordForm(forms.Form):
     pass
 
 # transaction
+class transactions_id_form(forms.ModelForm):
+    class Meta:
+        model = UserAccount
+        fields = ['transactions_id']
+
 class deposit_form(forms.ModelForm):
     class Meta:
         model = UserAccount
-        fields = ['amount_paid', 'username']
+        fields = ['balance']
 
 class withdraw_form(forms.ModelForm):
     class Meta:
@@ -69,4 +74,10 @@ class StkpushForm(forms.Form):
 
     pass
 
+# deposit form
+class depositForm(forms.Form):
+    amount = forms.IntegerField()
+
+    class Meta:
+        fields = ["amount"]
 
