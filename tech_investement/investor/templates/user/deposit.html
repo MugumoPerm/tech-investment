@@ -27,7 +27,7 @@ Deposit
 			<form method="POST" action="{% url 'deposit' %}">
 				{% csrf_token %}
 				<div class="form-group">
-					<label for="amount">Amount</label>
+					<label for="amount">Transaction ID</label>
 					
 					{% render_field form.balance class='form-control' placeholder='Username' %}
 					<!-- <input type="text" class="form-control" id="amount" name="amount" required> -->

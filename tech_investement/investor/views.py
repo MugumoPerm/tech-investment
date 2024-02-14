@@ -225,6 +225,10 @@ def reset_done(request):
 
 
 #transactions
+def transactions(request):
+    
+    return render(request, 'admin/deposit.html')
+
 def transactions_history(request):
     return render(request, 'transactions_history.html')
 
@@ -248,19 +252,19 @@ def deposit(request):
             recommender = recommended_by.recommended_by
             recommender_account = UserAccount.objects.get(username=recommender)
             recommended_account = UserAccount.objects.get(username=request.user)
-            if recommended_account.balance == 0:
-                print('balance is:', recommended_account.balance)
+            if recommended_account.bonus_given == False:
                 bonus = deposit * 25
                 recommender_account.bonus += bonus / 100
+                recommended_account.bonus_given = True
+                recommended_account.save()    
                 recommender_account.save()
-                balance.save()
             else:
                 balance.save()
 
             # give only one time bonus to the user who recommended this user after deposit 
-            # recommended_by = UserProfile.objects.get(username=request.user)
+            # recommended_by = userprofile.objects.get(username=request.user)
             # recommender = recommended_by.recommended_by
-            # recommender_account = UserAccount.objects.get(username=recommender)
+            # recommender_account = useraccount.objects.get(username=recommender)
             # bonus = deposit * 25
             # if recommender_account.bonus == 0:
             #     recommender_account.bonus += bonus / 100
@@ -269,7 +273,7 @@ def deposit(request):
             #     pass
 
 
-            messages.success(request, 'Deposit successful')
+            messages.success(request, 'deposit successful')
             return redirect('deposit')
     else:
         form = deposit_form()

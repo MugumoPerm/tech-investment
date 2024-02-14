@@ -23,6 +23,7 @@ urlpatterns = [
     path('auth/logout/', views.logout_view, name='logout'),
     
     #transactions
+    path('staff/admin/auth/transactions/', views.transactions, name='transactions'),
     path('transactions_history/', views.transactions_history, name='transactions_history'),
     path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),

@@ -1,0 +1,29 @@
+<!-- searches for a unique id and returns the database for that id and then a deposit form is displayed -->
+<!-- ```html -->
+
+{% extends 'layout.html' %}
+
+{% load static %}
+
+{% block title %}
+admin Deposit
+{% endblock title %}
+
+
+{% block links %}
+
+{% endblock links %}
+
+
+
+{% block body %}
+
+<h1>Deposit Form</h1>
+    <form id="search-form">
+        <input type="text" id="transaction-id" placeholder="Enter Transaction ID">
+        <button type="button" id="search-button" hx-get="{% url 'transactions' %}" hx-target="#result">Search</button>
+    </form>
+    <div id="result"></div>
+    <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
+
+{% endblock body %}
