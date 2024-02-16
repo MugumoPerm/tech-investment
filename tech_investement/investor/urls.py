@@ -7,6 +7,7 @@ from . import views
 urlpatterns = [
     #users
     path('', views.landing_page, name='landing_page'),
+    path('deposit/', views.transactions_id, name='transactions_id'),
     path('user_profile/', views.user_profile, name='user_profile'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('users/', views.users, name='users'),
@@ -27,7 +28,8 @@ urlpatterns = [
     path('transactions_history/', views.transactions_history, name='transactions_history'),
     path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),
-    path('staff/admin/auth/deposit', views.deposit, name='deposit'),
+    path('staff/admin/auth/deposit', views.admin_workplace, name='workplace'),
+    path('staff/admin/auth/amount', views.deposit, name='deposit'),
     path('withdraw/', views.withdraw, name='withdraw'),
     
     #assets

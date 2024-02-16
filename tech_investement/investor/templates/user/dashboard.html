@@ -26,10 +26,26 @@
 	<p>recommended users: {{recommended_users}} </p>
 
 
+	{% if user %}
 
-<p>User: {{user}}</p>
+	<p>User: {{user}}</p>
+	
+	{% else %}
 
-<p>Referral bonus: {{referral_bonus}}</p>
+		<p>user: (null)</p>
+	
+	{% endif %}
+
+{% if referral_bonus %}
+
+	<p>Referral bonus: {{referral_bonus}}</p>
+	
+{% else %}
+
+	<p>user profile: (null)</p>
+	
+{% endif %}
+
 
 {% if user_profile %}
 

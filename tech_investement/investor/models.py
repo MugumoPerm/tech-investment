@@ -109,5 +109,12 @@ class Asset(models.Model):
 #     def __str__(self):
 #         return f"{self.user.username} - Stock Name: {self.stock_name}, Stock Value: {self.stock_value}, Date: {self.date}"
 
-
+# paid transactions
+# class PaidTransaction(models.Model):
+#     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='PaidTransaction')
+#     amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+#     date = models.DateTimeField(auto_now_add=True)
+#     transactions_id = models.CharField(max_length=12, null=False, blank=False, default=True)
+#     def __str__(self):
+#         return f"{self.user.username} - Amount: {self.amount}, Date: {self.date}"
 

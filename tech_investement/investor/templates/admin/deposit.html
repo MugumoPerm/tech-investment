@@ -17,17 +17,19 @@ admin Deposit
 
 
 {% block body %}
-
+<div id="result">
 <h1>Deposit Form</h1>
-<form id="search-form" action="" method="post" > 
+	<form id="search-form" action="" method="post" > 
         <!-- <input type="text" id="transaction-id" placeholder="Enter Transaction ID" name="transaction_id"> -->
 		{% csrf_token %}
 
 		<label for="transaction_id">Transaction ID:</label>
-		{{ transaction_id_form.as_p }}
-        <button type="button" id="search-button" hx-POST="{% url 'get_transaction' %}" hx-target="#result">Search</button>
-    </form>
-    <div id="result"></div>
+		{{ form.as_p }}
+        <button type="submit" id="search-button" hx-POST="{% url 'get_transaction' %}" hx-target="#result" hx-Replace="innerHTML">Search</button>
+	
+	</form>
+
+</div>
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>
 
 {% endblock body %}
