@@ -17,12 +17,9 @@ from django.contrib.auth import get_user_model
 from .models import UserProfile, UserAccount
 
 # import forms
-from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form
+from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm
 
 
-import json
-from django.core.serializers.json import DjangoJSONEncoder
-from django.core.serializers import serialize
 
 # Create your views here.
 
@@ -51,6 +48,7 @@ def adminLogin(request):
 # @login_required(login_url='admin_login')
 def adminDashboard(request):
     message = messages.get_messages(request)
+
     #calculate how many users in the database
     users = User.objects.all()
     user_count = len(users)
@@ -288,26 +286,31 @@ def deposit(request):
                 # check if the user has been recommended by another user
                 if UserProfile.objects.get(username = username).recommended_by:
 
+                    
                         # give a 25% bonus to the user who recommended this user after deposit
                         recommended_by = UserProfile.objects.get(username=username)
                         recommender = recommended_by.recommended_by
                         recommender_account = UserAccount.objects.get(username=recommender)
                         recommended_account = UserAccount.objects.get(username=username)
-                        if recommended_account.bonus_given == False:
-                            bonus = deposit * 25
-                            recommender_account.bonus += bonus / 100
-                            # add the bonus to the recommender's account balance
-                            recommender_account.balance += bonus / 100
-                            recommended_account.bonus_given = True
-                            # save the accounts
-                            recommended_account.save()    
-                            recommender_account.save()
-                          
-                        else:
-                            balance.save()
 
-                        messages.success(request, 'deposit successful + bonus awarded')
-                        return redirect('workplace')
+                        # check if the recommender has ever deposited
+                        if recommender_account.balance > 0:
+                            if recommender_account.bonus_given == False:
+                                if recommended_account.bonus_given == False:
+                                    bonus = deposit * 25
+                                    recommender_account.bonus += bonus / 100
+                                    # add the bonus to the recommender's account balance
+                                    recommender_account.balance += bonus / 100
+                                    recommended_account.bonus_given = True
+                                    # save the accounts
+                                    recommended_account.save()    
+                                    recommender_account.save()
+                                  
+                                else:
+                                    balance.save()
+
+                                messages.success(request, 'deposit successful + bonus awarded')
+                                return redirect('workplace')
                 else:
                     messages.success(request, 'deposit successful to ' + username)
                     return redirect('workplace')
@@ -361,3 +364,26 @@ def get_transaction(request):
                 return HttpResponse('invalid transaction id')
     else:
         return HttpResponse('invalid transaction id')
+
+
+    # get the letter of each press of the keyboard using htmx
+def letter_form(request):
+    # display the letter form
+    form = letterForm()
+    return render(request, 'letter_form.html', {'form': form})
+
+
+# fetch the letters
+def get_letter(request):
+    if request.method == 'POST':
+        form = letterForm(request.POST)
+        if form.is_valid():
+
+            letter = request.POST.get('message')
+            return HttpResponse(letter)
+            color = request.POST.get('color')
+            return HttpResponse(color)
+            font = request.POST.get('font`')
+            return HttpResponse(font)
+    else:
+        return HttpResponse('invalid letter')

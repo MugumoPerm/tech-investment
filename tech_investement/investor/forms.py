@@ -81,3 +81,12 @@ class depositForm(forms.Form):
     class Meta:
         fields = ["amount"]
 
+
+
+# letter form
+class letterForm(forms.Form):
+    message = forms.CharField(max_length=100)
+    color = forms.CharField(max_length=12)
+    font = forms.CharField(max_length=12)
+    class Meta:
+        fields = ["message","color", "font"]

@@ -29,7 +29,7 @@ admin Deposit
 
 		<label for="transaction_id">Get Transaction ID:</label>
 		{{ form.as_p }}
-        <button type="button" id="search-button" hx-POST="{% url 'get_transaction' %}" hx-target="#result">Search</button>
+        <button type="button" id="search-button" hx-POST="{% url 'get_transaction' %}" hx-target="#result" hx-push-url="true" >Search</button>
     </form>
     <div id="result"></div>
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>

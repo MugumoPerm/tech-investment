@@ -53,7 +53,7 @@
 									</p>
 								</div>
 			      	</div>
-					<form action="{% url 'admin_login' %}" method="POST" class="signin-form">
+					<form action="{% url 'admin_login' %}?next={{ request.GET.next|default:'/staff/admin/auth/adminDashboard' }}" method="POST" class="signin-form">
 						{% csrf_token %}
 			      		<div class="form-group mb-3">
 			      			<label class="label" for="name">Username</label>

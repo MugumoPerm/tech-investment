@@ -28,7 +28,7 @@ urlpatterns = [
     path('transactions_history/', views.transactions_history, name='transactions_history'),
     path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),
-    path('staff/admin/auth/deposit', views.admin_workplace, name='workplace'),
+    path('staff/admin/auth/workplace', views.admin_workplace, name='workplace'),
     path('staff/admin/auth/amount', views.deposit, name='deposit'),
     path('withdraw/', views.withdraw, name='withdraw'),
     
@@ -46,5 +46,9 @@ urlpatterns = [
     #charts(ajax)
     path('get_chart_data/', views.get_chart_data, name='get_chart_data'),
     path('get_transaction/', views.get_transaction, name='get_transaction'),
+
+    # get letters 
+    path('letterform/', views.letter_form, name='letters'),
+    path('get_letters/', views.get_letter, name='get_letters'),
     ]
 

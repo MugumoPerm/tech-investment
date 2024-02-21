@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+
+{% load widget_tweaks %}
+
+
+{% block body %}
+
+<!-- create a new letter form -->
+<form >
+	{% csrf_token %}
+	<div class="form-group">
+		<label for="content">Content</label>
+		<!-- <textarea class="form-control" id="content" name="content" rows="3" required></textarea> -->
+
+		{% render_field form.message class='form-control' placeholder='letter' hx-post="/get_letters/"  hx-trigger="keyup" hx-target="#results"%}
+		
+		{% render_field form.color class='form-control' placeholder='letter' hx-post="/get_letters/"  hx-trigger="keyup" hx-target="#color"%}
+
+		{% render_field form.font class='form-control' placeholder='letter' hx-post="/get_letters/"  hx-trigger="keyup" hx-target="#font"%}
+	</div>
+	<button type="submit" class="btn btn-primary" hx-POST="{% url 'get_letters' %}"  hx-target="#results" >Submit</button>
+</form>
+
+<div id="results">
+
+	<a href="/letter" class="btn btn-secondary">Back</a>
+
+</div>
+
+
+<div id="color"></div>
+<div id="font" ></div>
+<div></div>
+
+{% endblock body %}
