@@ -26,7 +26,7 @@ urlpatterns = [
     #transactions
     path('transactions/id', views.transactions_id, name='transactions_id'),
     path('transactions_history/', views.transactions_history, name='transactions_history'),
-    path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
+    # path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),
     path('staff/admin/auth/workplace', views.admin_workplace, name='workplace'),
     path('staff/admin/auth/amount', views.deposit, name='deposit'),

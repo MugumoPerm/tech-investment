@@ -14,7 +14,7 @@ from django.contrib.auth import get_user_model
 
 
 # import models
-from .models import UserProfile, UserAccount
+from .models import UserProfile, UserAccount, Transaction_ids
 
 # import forms
 from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm
@@ -258,7 +258,6 @@ def transactions_id(request):
 def transactions_history(request):
     return render(request, 'transactions_history.html')
 
-def transactions_pending(request):
     return render(request, 'transactions_pending.html')
 
 def transactions_completed(request):
@@ -278,15 +277,24 @@ def deposit(request):
                 balance = UserAccount.objects.get(transactions_id=transaction)
                 print('balance', balance)
                 balance.balance += deposit
+                # save the balance
                 balance.save()
+
+                # save the transaction id and the deposited amount to the Transaction_ids model
+                transaction_id = Transaction_ids.objects.create(user=balance.username, transactions_id=transaction, amount_deposited=deposit)
+                transaction_id.save()
+
+                # add a number 1 to the transaction id to show that it has been used
+                transaction = UserAccount.objects.get(transactions_id=transaction)
+                transaction.transactions_id += 'Done'
+                transaction.save()
+
 
                 # get the username using the transaction id
                 username = UserAccount.objects.get(transactions_id=transaction).username
                 print('username', username)
                 # check if the user has been recommended by another user
                 if UserProfile.objects.get(username = username).recommended_by:
-
-                    
                         # give a 25% bonus to the user who recommended this user after deposit
                         recommended_by = UserProfile.objects.get(username=username)
                         recommender = recommended_by.recommended_by
@@ -358,12 +366,20 @@ def get_transaction(request):
             if form.is_valid():
                 transaction_id = form.cleaned_data['transactions_id']
                 request.session['transaction_id'] = transaction_id
-                return redirect('deposit')
 
+                # check if the transaction id exists
+                if UserAccount.objects.filter(transactions_id=transaction_id).exists():
+                    # display the deposit form
+                    return redirect('deposit')
+                else:
+                    # display an error message
+                    messages.error(request, 'invalid transaction id')
+                    return redirect('workplace')
             else:
-                return HttpResponse('invalid transaction id')
+                # messages.error(request, 'invalid transaction id')
+                return redirect('workplace')
     else:
-        return HttpResponse('invalid transaction id')
+        return redirect('workplace')
 
 
     # get the letter of each press of the keyboard using htmx

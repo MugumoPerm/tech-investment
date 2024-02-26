@@ -2,14 +2,16 @@
 
 {% load static %}
 
+{% load widget_tweaks %}
+
+
 {% block title %}
 admin Deposit
 {% endblock title %}
 
-
 {% block links %}
-
-{% endblock links %}
+<link rel="stylesheet" href="{% static 'styles/login.css' %}">
+{% endblock %}
 
 
 
@@ -28,7 +30,7 @@ admin Deposit
 		{% csrf_token %}
 
 		<label for="transaction_id">Get Transaction ID:</label>
-		{{ form.as_p }}
+		{% render_field form.transactions_id class="form-control" %}
         <button type="button" id="search-button" hx-POST="{% url 'get_transaction' %}" hx-target="#result" hx-push-url="true" >Search</button>
     </form>
     <div id="result"></div>
