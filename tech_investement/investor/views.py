@@ -114,11 +114,11 @@ def users(request):
     return render(request, 'users.html')
 
 def user_profile(request):
-    user_transactions = []
-    user_deposit = []
-    user_withdraw = []
-    user_assets = []
-    user_balance = []
+    # user_transactions = []
+    # user_deposit = []
+    # user_withdraw = []
+    # user_assets = []
+    # user_balance = []
 
     return render(request, 'user_profile.html')
 

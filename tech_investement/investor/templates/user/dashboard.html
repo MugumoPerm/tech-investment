@@ -42,7 +42,7 @@
 	
 {% else %}
 
-	<p>user profile: (null)</p>
+<p>Referral bonus: {{referral_bonus}}</p>
 	
 {% endif %}
 
@@ -51,16 +51,49 @@
 
 	<p>	balance:{{user_profile.UserAccount.balance}}</p><br>
 
+<p>Referral link:</p>
+
+<p> 
+
+<span id="referralLink" >http://192.168.16.107:2022/auth/register/{{user_profile.code}}</span>
+
+<span style="cursor:pointer;" onclick="copyText()" class="material-icons-outlined">copy</span><br>
+
+</p>
+
 {% else %}
 	
 	<h4>(null)</h4>
 
 {% endif %}
 
+
 <a href="{% url "transactions_id" %}" ><span style="color: green;" class="material-icons-outlined">arrow_circle_down</span></a>
 
+		  <a href="{% url "logout" %}">
 
-		  <a href="{% url "logout" %}" ><span style="color: red;" class="material-icons-outlined">logout</span></a>
+			  <span style="color: red;" class="material-icons-outlined">
+
+				  logout
+
+			  </span>
+		  </a>
+
+
+{% block script %}
+<script>
+function copyText() {
+  var copyText = document.getElementById("referralLink");
+  var textArea = document.createElement("textarea");
+  textArea.value = copyText.textContent;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textArea);
+  alert("Copied the text: " + copyText.textContent);
+}
+</script>
+{% endblock script %}
 
 {% endblock body %}
 

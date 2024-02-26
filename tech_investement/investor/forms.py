@@ -90,3 +90,4 @@ class letterForm(forms.Form):
     font = forms.CharField(max_length=12)
     class Meta:
         fields = ["message","color", "font"]
+
