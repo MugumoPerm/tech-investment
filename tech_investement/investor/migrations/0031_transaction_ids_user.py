@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='transaction_ids',
             name='user',
-            field=models.ForeignKey(default=django.utils.timezone.now, on_delete=django.db.models.deletion.CASCADE, related_name='Transaction_ids', to='investor.userprofile'),
+            field=models.ForeignKey(default=123, on_delete=django.db.models.deletion.CASCADE, related_name='Transaction_ids', to='investor.userprofile'),
             preserve_default=False,
         ),
     ]

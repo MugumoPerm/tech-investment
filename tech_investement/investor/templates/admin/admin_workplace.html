@@ -25,13 +25,13 @@ admin Deposit
 	{% endif %}
 
 <h1>Deposit Form</h1>
-<form id="search-form" action="" method="post" > 
+<form hx-POST="{% url 'get_transaction' %}" hx-target="#result" hx-push-url="true"> 
         <!-- <input type="text" id="transaction-id" placeholder="Enter Transaction ID" name="transaction_id"> -->
 		{% csrf_token %}
 
 		<label for="transaction_id">Get Transaction ID:</label>
 		{% render_field form.transactions_id class="form-control" %}
-        <button type="button" id="search-button" hx-POST="{% url 'get_transaction' %}" hx-target="#result" hx-push-url="true" >Search</button>
+        <button type="submit">Search</button>
     </form>
     <div id="result"></div>
     <script src="https://unpkg.com/htmx.org/dist/htmx.js"></script>

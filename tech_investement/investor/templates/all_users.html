@@ -1,10 +1,10 @@
 <!-- //myapp/templates/show.html -->
 {% extends "base.html" %}
   
-{% block title %}Transactions History{% endblock title %}
-
-{% block heading %}Transactions History{% endblock heading %}
+{% block title %}Customer Records{% endblock title %}
   
+{% block heading %}Customer Records{% endblock heading %}
+
 {% block content %}
  <div class="col-md-12">
         <span><a href="/addnew" class="btn btn-primary">Add New Record</a></span>  
@@ -13,20 +13,20 @@
         <thead>
             <th><input type="checkbox" id="checkall" /></th>
             <th>ID</th>
-            <th>username</th>
-			<th>Transaction id</th>
-			<th>Amount Deposited</th>
+            <th>Username</th>
+			<th>email</th>
+			<th>phone</th>
             <th>Edit</th>
             <th>Delete</th>
         </thead>
         <tbody>
-        {% for transaction in transactions  %}  
+        {% for user in profile  %}  
             <tr>  
             <td><input type="checkbox" class="checkthis" /></td>
-            <td>{{ transactions.id }}</td> 
-            <td>{{ transaction.username }}</td>  
-			<td>{{ transaction.transactions_id }}</td>
-			<td>{{ transaction.amount_deposited }}</td>
+            <td>{{ user.id }}</td> 
+            <td>{{ user.username }}</td>  
+			<td>{{ user.email }}</td>
+			<td>{{ user.phone_number }}</td>
             <td><a href="/edit/{{ user.id }}" class="btn btn-primary">Edit</a></td>
             <td><a href="/delete/{{ user.id }}" class="btn btn-danger">Delete</a></td>  
             </tr>  

@@ -85,7 +85,15 @@ def admin_workplace(request):
 
     return render(request, 'admin/admin_workplace.html', {'form': form})
 
-#users
+#*************users***************
+
+def all_users(request):
+    # fetch all users
+    users = UserAccount.objects.all()
+    profile = UserProfile.objects.all()
+    return render(request, 'all_users.html', {'users': users, 'profile': profile})
+
+
 def landing_page(request):
     return render(request,'user/landing_page.html')
 
@@ -197,11 +205,6 @@ def register(request, *args, **kwargs):
                 # save the profile
                 profile_instance.save()
 
-                # add the user to the recommender's list of recommended users
-                # User_instance.recommended.add(profile_instance)
-                # save the user
-                # User_instance.save()
-                
                 # clear the session
                 del request.session['ref_profile']
 
@@ -256,7 +259,10 @@ def transactions_id(request):
 
 
 def transactions_history(request):
-    return render(request, 'transactions_history.html')
+    # fetch all the transactions
+    transactions = Transaction_ids.objects.all()
+
+    return render(request, 'transactions/transactions_history.html', {'transactions': transactions})
 
     return render(request, 'transactions_pending.html')
 
@@ -268,6 +274,8 @@ def transactions_completed(request):
 def deposit(request):
     transaction = request.session.get('transaction_id')
     print('transaction id', transaction)
+    form = deposit_form()
+    context = {'form': form}
     if request.method == 'POST':
         try:
             form = deposit_form(request.POST)
@@ -280,19 +288,10 @@ def deposit(request):
                 # save the balance
                 balance.save()
 
-                # save the transaction id and the deposited amount to the Transaction_ids model
-                transaction_id = Transaction_ids.objects.create(user=balance.username, transactions_id=transaction, amount_deposited=deposit)
-                transaction_id.save()
-
-                # add a number 1 to the transaction id to show that it has been used
-                transaction = UserAccount.objects.get(transactions_id=transaction)
-                transaction.transactions_id += 'Done'
-                transaction.save()
-
+               
 
                 # get the username using the transaction id
                 username = UserAccount.objects.get(transactions_id=transaction).username
-                print('username', username)
                 # check if the user has been recommended by another user
                 if UserProfile.objects.get(username = username).recommended_by:
                         # give a 25% bonus to the user who recommended this user after deposit
@@ -300,7 +299,6 @@ def deposit(request):
                         recommender = recommended_by.recommended_by
                         recommender_account = UserAccount.objects.get(username=recommender)
                         recommended_account = UserAccount.objects.get(username=username)
-
                         # check if the recommender has ever deposited
                         if recommender_account.balance > 0:
                             if recommender_account.bonus_given == False:
@@ -314,17 +312,30 @@ def deposit(request):
                                     recommended_account.save()    
                                     recommender_account.save()
                                   
-                                else:
-                                    balance.save()
-
+                            else:
+                                balance.save()
                                 messages.success(request, 'deposit successful + bonus awarded')
-                                return redirect('workplace')
+
+                                # return redirect('workplace')
                 else:
+                    # save the balance
+                    balance.save()
                     messages.success(request, 'deposit successful to ' + username)
-                    return redirect('workplace')
-        # user does not exist or transaction id appears twice
+                    # return redirect('workplace')
+                 # save the transaction id and the deposited amount to the Transaction_ids model
+                transaction_username = UserAccount.objects.get(transactions_id=transaction)
+                transaction_id = Transaction_ids.objects.create(user=transaction_username.username, transactions_id=transaction, amount_deposited=deposit)
+                transaction_id.save()
+                # # edit the tranasaction id to show that the user has deposited
+                transaction_username.transactions_id += 'Paid'
+                transaction_username.save()
+
+                return redirect('workplace')
+
+        
+        # show that the transaction id has been updated to show that the user has deposited
         except UserAccount.DoesNotExist:
-            messages.error(request, 'Invalid transaction id')
+            messages.success(request, 'deposit successful')
             return redirect('workplace')
         except UserAccount.MultipleObjectsReturned:
             messages.error(request, 'Two or more transaction id found')
@@ -350,6 +361,16 @@ def recommended_users(request):
     recommended_users = len(profile)
     return HttpResponse('recommended_users: ' + str(recommended_users))
 
+# ***************edit users***************
+
+# delete a user
+def destroy(request, id): 
+    user = UserProfile.objects.get(id=id)
+    user.delete()
+    return redirect("all_users")  
+
+
+
 
 #ajax requests
 def get_chart_data(request):
@@ -367,16 +388,19 @@ def get_transaction(request):
                 transaction_id = form.cleaned_data['transactions_id']
                 request.session['transaction_id'] = transaction_id
 
+                print('transaction id', transaction_id)
                 # check if the transaction id exists
                 if UserAccount.objects.filter(transactions_id=transaction_id).exists():
                     # display the deposit form
+                    print('transaction id', transaction_id)
+                    # return HttpResponse('valid transaction id')
                     return redirect('deposit')
                 else:
-                    # display an error message
+                   # display an error message
                     messages.error(request, 'invalid transaction id')
                     return redirect('workplace')
             else:
-                # messages.error(request, 'invalid transaction id')
+                messages.error(request, 'invalid form')
                 return redirect('workplace')
     else:
         return redirect('workplace')

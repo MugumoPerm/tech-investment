@@ -88,8 +88,9 @@ class UserAccount(models.Model):
 
 # # transactions
 class Transaction_ids(models.Model):
-    user = models.CharField(max_length=12, null=False, blank=False, default=True)
-    transactions_id = models.CharField(max_length=12, null=False, blank=False, default=True)
+    user = models.CharField(max_length=50)
+
+    transactions_id = models.CharField(max_length=12)
     amount_deposited = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):

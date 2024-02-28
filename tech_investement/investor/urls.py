@@ -12,6 +12,8 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('users/', views.users, name='users'),
     path('recommended_users/', views.recommended_users, name='recommended_users'),
+    path('all_users/', views.all_users, name='all_users'),
+    path('delete/<int:id>', views.destroy, name='destroy'),
 
     #authentications
     path('auth/login', views.login_view, name='login'),

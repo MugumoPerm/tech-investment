@@ -47,12 +47,12 @@
 
         <ul class="sidebar-list">
           <li class="sidebar-list-item">
-            <a href="#" target="_blank">
-              <span class="material-icons-outlined">dashboard</span> Dashboard
+			  <a href="{% url "workplace" %} " target="_blank">
+              <span class="material-icons-outlined">dashboard</span> Workplace
             </a>
           </li>
           <li class="sidebar-list-item">
-			  <a href="{% url "workplace" %} " target="_blank">
+			  <a href="" target="_blank">
               <span class="material-icons-outlined">inventory_2</span> Deposit
             </a>
           </li>
@@ -62,7 +62,7 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-            <a href="#" target="_blank">
+			  <a href="{% url "all_users" %}" target="">
               <span class="material-icons-outlined">groups</span> Customers
             </a>
           </li>
@@ -102,37 +102,45 @@
 		</div>
 
         <div class="main-cards">
-
-          <div class="card">
+			
+			<div class="card">
+          <a style="text-decoration: None; color: white;" href="{% url "all_users" %}">
             <div class="card-inner">
               <h3>CUSTOMERS</h3>
               <span class="material-icons-outlined">inventory_2</span>
             </div>
 			<h1>{{customers}}</h1>
+		  </a>
           </div>
 
           <div class="card">
+          <a style="text-decoration: None; color: white;" href="{% url "all_users" %}">
             <div class="card-inner">
-              <h3>PENDING WITHDRAWAL</h3>
+              <h3>DEPOSITED</h3>
               <span class="material-icons-outlined">category</span>
             </div>
             <h1>25</h1>
+			</a>
           </div>
 
           <div class="card">
+          <a style="text-decoration: None; color: white;" href="{% url "all_users" %}">
             <div class="card-inner">
               <h3>WITHDRAWN</h3>
               <span class="material-icons-outlined">groups</span>
             </div>
             <h1>1500</h1>
+			</a>
           </div>
 
           <div class="card">
+          <a style="text-decoration: None; color: white;" href="{% url "all_users" %}">
             <div class="card-inner">
               <h3>Total amount</h3>
               <span class="material-icons-outlined">notification_important</span>
             </div>
 			<h1>{{total_amount}}</h1>
+			</a>
           </div>
 
         </div>
