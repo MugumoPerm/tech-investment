@@ -1,0 +1,40 @@
+
+<!-- //myapp/templates/show.html -->
+{% extends "base.html" %}
+  
+{% block title %}Deposits {% endblock title %}
+  
+{% block heading %}Deposits {% endblock heading %}
+
+{% block content %}
+ <div class="col-md-12">
+        <span><a href="/dashboard/" class="btn btn-primary">New Deposit</a></span>  
+        <div class="table-responsive">
+        <table id="bootstrapdatatable" class="table table-striped table-bordered" width="100%">
+        <thead>
+            <th><input type="checkbox" id="checkall" /></th>
+            <th>ID</th>
+            <th>Username</th>
+			<th>Transaction Id</th>
+			<th>Amount Deposited</th>
+            <th>Edit</th>
+            <th>Deposit</th>
+        </thead>
+        <tbody>
+        {% for user in user  %}  
+            <tr>  
+            <td><input type="checkbox" class="checkthis" /></td>
+            <td>{{ user.id }}</td> 
+            <td>{{ user.username }}</td>
+			<td>{{ user.transactions_id }}</td>
+			<td>{{ user.amount_paid }}</td>
+            <td><a href="/edit_deposit/{{ user.id }}" class="btn btn-primary">Edit</a></td>
+            <td><a href="/deposited_amount/{{ user.id }}" class="btn btn-danger">Deposit</a></td>  
+            </tr>  
+
+		{% endfor %}
+        </tbody>
+        </table>
+        </div>
+    </div>
+{% endblock content %}

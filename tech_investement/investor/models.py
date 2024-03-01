@@ -96,6 +96,14 @@ class Transaction_ids(models.Model):
     def __str__(self):
         return f" {self.user}, Transactions ID: {self.transactions_id}, Date: {self.date}"
 
+# # deposits
+class Deposit(models.Model):
+    username = models.CharField(max_length=12, null=False, blank=False)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateTimeField(auto_now_add=True)
+    transactions_id = models.CharField(max_length=12, null=False, blank=False)
+    def __str__(self):
+        return f"{self.username} - Amount: {self.amount_paid}, Date: {self.date}"
 
 
 # assets

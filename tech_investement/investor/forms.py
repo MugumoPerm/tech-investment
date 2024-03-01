@@ -3,7 +3,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import UserProfile, UserAccount
+from .models import UserProfile, UserAccount, Deposit
 
 #   *****authentication forms****
 # registration
@@ -47,7 +47,7 @@ class transactions_id_form(forms.ModelForm):
 
 class user_deposit_form(forms.ModelForm):
     class Meta:
-        model = UserAccount
+        model = Deposit
         fields = ['transactions_id', 'amount_paid',]
 
 class deposit_form(forms.ModelForm):

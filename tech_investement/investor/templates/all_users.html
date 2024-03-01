@@ -7,7 +7,7 @@
 
 {% block content %}
  <div class="col-md-12">
-        <span><a href="/addnew" class="btn btn-primary">Add New Record</a></span>  
+        <span><a href="/auth/register" class="btn btn-primary">Add New User</a></span>  
         <div class="table-responsive">
         <table id="bootstrapdatatable" class="table table-striped table-bordered" width="100%">
         <thead>
@@ -15,7 +15,6 @@
             <th>ID</th>
             <th>Username</th>
 			<th>email</th>
-			<th>phone</th>
             <th>Edit</th>
             <th>Delete</th>
         </thead>
@@ -26,7 +25,6 @@
             <td>{{ user.id }}</td> 
             <td>{{ user.username }}</td>  
 			<td>{{ user.email }}</td>
-			<td>{{ user.phone_number }}</td>
             <td><a href="/edit/{{ user.id }}" class="btn btn-primary">Edit</a></td>
             <td><a href="/delete/{{ user.id }}" class="btn btn-danger">Delete</a></td>  
             </tr>  

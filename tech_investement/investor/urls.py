@@ -14,6 +14,7 @@ urlpatterns = [
     path('recommended_users/', views.recommended_users, name='recommended_users'),
     path('all_users/', views.all_users, name='all_users'),
     path('delete/<int:id>', views.destroy, name='destroy'),
+    path('delete_transaction/<int:id>', views.destroy_transaction, name='destroy_transaction'),
 
     #authentications
     path('auth/login', views.login_view, name='login'),
@@ -25,15 +26,24 @@ urlpatterns = [
     path('auth/reset_done/', auth_views.PasswordResetDoneView.as_view(), name='reset_done'),
     path('auth/logout/', views.logout_view, name='logout'),
     
-    #transactions
+    # ******************************************
+    # ***************transactions***************
+    # ******************************************
+
     path('transactions/id', views.transactions_id, name='transactions_id'),
     path('transactions_history/', views.transactions_history, name='transactions_history'),
-    # path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),
     path('staff/admin/auth/workplace', views.admin_workplace, name='workplace'),
     path('staff/admin/auth/amount', views.deposit, name='deposit'),
     path('withdraw/', views.withdraw, name='withdraw'),
-    
+    path('make_deposit/<int:id>', views.make_deposit, name='make_deposit'),
+    path('deposited_amount/', views.deposited_amount, name='deposited_amount'),
+
+    # ############################################
+    # ################transactions################
+    # ############################################
+
+
     #assets
     path('assets/', views.assets, name='assets'),
 

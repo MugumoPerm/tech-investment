@@ -52,7 +52,7 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-			  <a href="" target="_blank">
+			  <a href="{% url "deposited_amount" %}" target="_blank">
               <span class="material-icons-outlined">inventory_2</span> Deposit
             </a>
           </li>
@@ -62,12 +62,12 @@
             </a>
           </li>
           <li class="sidebar-list-item">
-			  <a href="{% url "all_users" %}" target="">
+			  <a href="{% url "all_users" %}" target="_blank">
               <span class="material-icons-outlined">groups</span> Customers
             </a>
           </li>
           <li class="sidebar-list-item">
-            <a href="#" target="_blank">
+			  <a href="{% url "transactions_history" %}" target="">
               <span class="material-icons-outlined">fact_check</span> Inventory
             </a>
           </li>
@@ -104,7 +104,7 @@
         <div class="main-cards">
 			
 			<div class="card">
-          <a style="text-decoration: None; color: white;" href="{% url "all_users" %}">
+          <a style="text-decoration: None; color: white;" href="{% url "all_users" %}" target="_blank" >
             <div class="card-inner">
               <h3>CUSTOMERS</h3>
               <span class="material-icons-outlined">inventory_2</span>
@@ -114,7 +114,7 @@
           </div>
 
           <div class="card">
-          <a style="text-decoration: None; color: white;" href="{% url "all_users" %}">
+          <a style="text-decoration: None; color: white;" href="{% url "deposited_amount" %}" target="_blank">
             <div class="card-inner">
               <h3>DEPOSITED</h3>
               <span class="material-icons-outlined">category</span>

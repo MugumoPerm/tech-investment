@@ -14,10 +14,10 @@ from django.contrib.auth import get_user_model
 
 
 # import models
-from .models import UserProfile, UserAccount, Transaction_ids
+from .models import UserProfile, UserAccount, Transaction_ids, Deposit
 
 # import forms
-from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm
+from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm, user_deposit_form
 
 
 
@@ -90,7 +90,7 @@ def admin_workplace(request):
 def all_users(request):
     # fetch all users
     users = UserAccount.objects.all()
-    profile = UserProfile.objects.all()
+    profile = User.objects.all()
     return render(request, 'all_users.html', {'users': users, 'profile': profile})
 
 
@@ -235,36 +235,95 @@ def reset_done(request):
 
 
 
-#transactions
+# #########################transactions#########################
 
 # save the transaction id
 def transactions_id(request):
-    form = transactions_id_form()
+    form = user_deposit_form()
     if request.method == 'POST':
-        form = transactions_id_form(request.POST)
+        form = user_deposit_form(request.POST)
         if form.is_valid():
             transaction_id = form.cleaned_data['transactions_id']
-            transaction = UserAccount.objects.get(username=request.user)
-            transaction.transactions_id = transaction_id
-            transaction.save()
+            amount_paid = form.cleaned_data['amount_paid']
+            deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid)
+            deposit.save()
             messages.success(request, 'Transaction ID saved successfully')
             return redirect('dashboard')
     else:
-        form = transactions_id_form()
+        form = user_deposit_form()
 
     return render(request, 'user/deposit.html', {'form': form})
 
 
-
-
-
+# get the transaction id and display the deposit form
 def transactions_history(request):
     # fetch all the transactions
     transactions = Transaction_ids.objects.all()
-
     return render(request, 'transactions/transactions_history.html', {'transactions': transactions})
 
-    return render(request, 'transactions_pending.html')
+def deposited_amount(request):
+    user = Deposit.objects.all()
+    return render(request, 'transactions/deposit.html', {'user': user})
+
+def make_deposit(request, id):
+    if request.method == 'POST':
+        try:
+                deposit = UserAccount.objects.get(id=id).amount_paid
+                balance = UserAccount.objects.get(id=id)
+                balance.balance += deposit
+                # save the balance
+                balance.save()
+                # get the username using the transaction id
+                username = UserAccount.objects.get(id=id).username
+                # check if the user has been recommended by another user
+                if UserProfile.objects.get(username = username).recommended_by:
+                        # give a 25% bonus to the user who recommended this user after deposit
+                        recommended_by = UserProfile.objects.get(username=username)
+                        recommender = recommended_by.recommended_by
+                        recommender_account = UserAccount.objects.get(username=recommender)
+                        recommended_account = UserAccount.objects.get(username=username)
+                        # check if the recommender has ever deposited
+                        if recommender_account.balance > 0:
+                            if recommender_account.bonus_given == False:
+                                if recommended_account.bonus_given == False:
+                                    bonus = deposit * 25
+                                    recommender_account.bonus += bonus / 100
+                                    # add the bonus to the recommender's account balance
+                                    recommender_account.balance += bonus / 100
+                                    recommended_account.bonus_given = True
+                                    # save the accounts
+                                    recommended_account.save()    
+                                    recommender_account.save()
+                                  
+                            else:
+                                balance.save()
+                                messages.success(request, 'deposit successful + bonus awarded')
+
+                else:
+                    # save the balance
+                    balance.save()
+                    messages.success(request, 'deposit successful to ' + username)
+                
+                # save the transaction id and the deposited amount to the Transaction_ids model
+                transaction_username = UserAccount.objects.get(id=id)
+                transaction_id = Transaction_ids.objects.create(user=transaction_username.username, transactions_id=transaction, amount_deposited=deposit)
+                transaction_id.save()
+                # edit the tranasaction id to show that the user has deposited
+                transaction_username.transactions_id += 'Paid'
+                transaction_username.save()
+                return redirect('deposited_amount')
+        
+        # show that the transaction id has been updated to show that the user has deposited
+        except UserAccount.DoesNotExist:
+            messages.success(request, 'deposit successful')
+            return redirect('deposited_amount')
+        except UserAccount.MultipleObjectsReturned:
+            messages.error(request, 'Two or more transaction id found')
+            return redirect('deposited_amount')
+    else:
+        form = deposit_form()
+        context = {'form': form}
+    return render(request, 'transactions/edit_deposit.html', context)
 
 def transactions_completed(request):
     return render(request, 'transactions_completed.html')
@@ -273,7 +332,6 @@ def transactions_completed(request):
 # deposit logic
 def deposit(request):
     transaction = request.session.get('transaction_id')
-    print('transaction id', transaction)
     form = deposit_form()
     context = {'form': form}
     if request.method == 'POST':
@@ -287,9 +345,6 @@ def deposit(request):
                 balance.balance += deposit
                 # save the balance
                 balance.save()
-
-               
-
                 # get the username using the transaction id
                 username = UserAccount.objects.get(transactions_id=transaction).username
                 # check if the user has been recommended by another user
@@ -365,11 +420,15 @@ def recommended_users(request):
 
 # delete a user
 def destroy(request, id): 
-    user = UserProfile.objects.get(id=id)
+    user = User.objects.get(id=id)
     user.delete()
     return redirect("all_users")  
 
-
+# delete a transaction
+def destroy_transaction(request, id):
+    transaction = Transaction_ids.objects.get(id=id)
+    transaction.delete()
+    return redirect('transactions_history')
 
 
 #ajax requests
