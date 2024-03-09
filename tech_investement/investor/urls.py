@@ -15,6 +15,7 @@ urlpatterns = [
     path('all_users/', views.all_users, name='all_users'),
     path('delete/<int:id>', views.destroy, name='destroy'),
     path('delete_transaction/<int:id>', views.destroy_transaction, name='destroy_transaction'),
+    path('destroy_deposit/<int:id>', views.destroy_deposit, name='destroy_deposit'),
 
     #authentications
     path('auth/login', views.login_view, name='login'),
@@ -58,9 +59,17 @@ urlpatterns = [
     #charts(ajax)
     path('get_chart_data/', views.get_chart_data, name='get_chart_data'),
     path('get_transaction/', views.get_transaction, name='get_transaction'),
+    
+    # refresh customers
+    path('customers/', views.customers, name='customers'),
 
-    # get letters 
-    path('letterform/', views.letter_form, name='letters'),
-    path('get_letters/', views.get_letter, name='get_letters'),
-    ]
+    # refresh deposited
+    path('deposited/', views.deposited, name='deposited'),
 
+    # refresh withdrawn
+    # path('withdrawn/', views.withdrawn, name='withdrawn'),
+    
+    # refresh_balance
+    path('refresh_balance/', views.refresh_balance, name='refresh_balance'),
+
+]

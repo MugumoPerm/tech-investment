@@ -36,10 +36,10 @@
             <td><input type="checkbox" class="checkthis" /></td>
             <td>{{ user.id }}</td> 
             <td>{{ user.username }}</td>
-			<td>{{ user.transactions_id }}</td>
+			<td style="font-size: 1.4rem; font-weight: 900;">{{ user.transactions_id }}</td>
 			<td>{{ user.amount_paid }}</td>
             <td><a href="/edit_deposit/{{ user.id }}" class="btn btn-primary">Edit</a></td>
-            <td><a href="/make_deposit/{{ user.id }}" class="btn btn-danger">Deposit</a></td>  
+            <td><a href="/make_deposit/{{ user.id }}" class="btn btn-success">Deposit</a></td>  
             <td><a href="/destroy_deposit/{{ user.id }}" class="btn btn-danger">Delete</a></td>
 			</tr>  
 

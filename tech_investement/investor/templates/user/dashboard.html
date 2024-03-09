@@ -38,7 +38,7 @@
 
 {% if referral_bonus %}
 
-	<p>Referral bonus: {{referral_bonus}}</p>
+<p>Referral bonus: <span class="num" data-val="{{ referral_bonus }}">0.00</span></p>
 	
 {% else %}
 
@@ -49,7 +49,7 @@
 
 {% if user_profile %}
 
-	<p>	balance:{{user_profile.UserAccount.balance}}</p><br>
+	<p>	balance:<span class="num" data-val="{{user_profile.UserAccount.balance}}">0.00</span></p><br>
 
 <p>Referral link:</p>
 
@@ -93,6 +93,7 @@ function copyText() {
   alert("Copied the text: " + copyText.textContent);
 }
 </script>
+<script src="{% static 'js/counter.js' %}"></script>
 {% endblock script %}
 
 {% endblock body %}

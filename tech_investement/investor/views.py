@@ -59,14 +59,19 @@ def adminDashboard(request):
     for user in UserProfile.objects.all():
         total_amount += user.UserAccount.balance
     total_amount = total_amount
-
+    
+    # calculate the total number deposits
+    deposits = Deposit.objects.all()
+    deposits_count = len(deposits)
 
     #get the total number of users in UserProfiles
     user_profiles = UserProfile.objects.all()
     user_profiles_count = len(user_profiles)
 
+    print("william is here")
 
-    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'products': [100, 200, 30, 40, 500]}
+
+    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'deposited':deposits_count , 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
 
 
@@ -245,14 +250,25 @@ def transactions_id(request):
         if form.is_valid():
             transaction_id = form.cleaned_data['transactions_id']
             amount_paid = form.cleaned_data['amount_paid']
-            deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid)
-            deposit.save()
-            # save the transaction id to the user account
-            user_account = UserAccount.objects.get(username=request.user.username)
-            user_account.transactions_id = transaction_id
-            user_account.save()
-            messages.success(request, 'Transaction ID saved successfully')
-            return redirect('dashboard')
+            # check if the transaction id exists
+            if UserAccount.objects.filter(transactions_id=transaction_id).exists():
+                # return an error message to the user
+                messages.error(request, 'Transaction ID already exists')
+                return redirect('transactions_id')
+            # check if the transaction id exists in Transaction_ids
+            elif Transaction_ids.objects.filter(transactions_id=transaction_id).exists():
+                # return an error message to the user
+                messages.error(request, 'Transaction ID has already been used')
+                return redirect('transactions_id')
+            else:
+                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid)
+                deposit.save()
+                # save the transaction id to the user account
+                user_account = UserAccount.objects.get(username=request.user.username)
+                user_account.transactions_id = transaction_id
+                user_account.save()
+                messages.success(request, 'Transaction ID saved successfully')
+                return redirect('dashboard')
     else:
         form = user_deposit_form()
 
@@ -278,6 +294,13 @@ def make_deposit(request, id):
         # get the amount deposited
         amount = user.amount_paid
         # get the user account
+        
+        # check whether the transaction exists in Transaction_ids
+        if Transaction_ids.objects.filter(transactions_id=transaction_id).exists():
+            # return an error message to the user
+            messages.error(request, 'Transaction ID already has ever been used')
+            return redirect('deposited_amount')
+
         user_account = UserAccount.objects.get(transactions_id=transaction_id)
         # add the amount deposited to the user's account
         user_account.amount_paid = amount
@@ -443,6 +466,11 @@ def destroy_transaction(request, id):
     transaction.delete()
     return redirect('transactions_history')
 
+# delete a deposit
+def destroy_deposit(request, id):
+    user = Deposit.objects.get(id=id)
+    user.delete()
+    return redirect('deposited_amount')
 
 #ajax requests
 def get_chart_data(request):
@@ -478,24 +506,28 @@ def get_transaction(request):
         return redirect('workplace')
 
 
-    # get the letter of each press of the keyboard using htmx
-def letter_form(request):
-    # display the letter form
-    form = letterForm()
-    return render(request, 'letter_form.html', {'form': form})
+# refresh customer count
+def customers(request):
+    users = User.objects.all()
+    user_count = len(users)
+    return HttpResponse(user_count)
 
+# refresh how many users have deposited
+def deposited(request):
+    deposits = Deposit.objects.all()
+    deposits_count = len(deposits)
+    return HttpResponse(deposits_count)
 
-# fetch the letters
-def get_letter(request):
-    if request.method == 'POST':
-        form = letterForm(request.POST)
-        if form.is_valid():
+# refresh how many users have withdrawn
+# def withdraws(request):
+#     withdraws = Withdraw.objects.all()
+#     withdraws_count = len(withdraws)
+#     return HttpResponse(withdraws_count)
 
-            letter = request.POST.get('message')
-            return HttpResponse(letter)
-            color = request.POST.get('color')
-            return HttpResponse(color)
-            font = request.POST.get('font`')
-            return HttpResponse(font)
-    else:
-        return HttpResponse('invalid letter')
+# refresh balance
+def refresh_balance(request):
+    total_amount = 0
+    for user in UserProfile.objects.all():
+        total_amount += user.UserAccount.balance
+    balance = total_amount
+    return HttpResponse(balance)
