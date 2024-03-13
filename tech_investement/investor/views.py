@@ -261,7 +261,7 @@ def transactions_id(request):
                 messages.error(request, 'Transaction ID has already been used')
                 return redirect('transactions_id')
             else:
-                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid)
+                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid, phone_number=request.user.profile.phone_number)
                 deposit.save()
                 # save the transaction id to the user account
                 user_account = UserAccount.objects.get(username=request.user.username)

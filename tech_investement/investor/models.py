@@ -100,6 +100,7 @@ class Transaction_ids(models.Model):
 class Deposit(models.Model):
     username = models.CharField(max_length=12, null=False, blank=False)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    phone_number = models.IntegerField(null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
     transactions_id = models.CharField(max_length=12, null=False, blank=False)
     def __str__(self):

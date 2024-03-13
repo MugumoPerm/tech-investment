@@ -26,6 +26,8 @@
             <th>Username</th>
 			<th>Transaction Id</th>
 			<th>Amount Deposited</th>
+			<th>phone_number</th>
+			<th>Date</th>
             <th>Edit</th>
             <th>Deposit</th>
 			<th>Delete</th>
@@ -38,6 +40,8 @@
             <td>{{ user.username }}</td>
 			<td style="font-size: 1.4rem; font-weight: 900;">{{ user.transactions_id }}</td>
 			<td>{{ user.amount_paid }}</td>
+			<td>{{ user.phone_number }}</td>
+			<td>{{ user.date }}</td>
             <td><a href="/edit_deposit/{{ user.id }}" class="btn btn-primary">Edit</a></td>
             <td><a href="/make_deposit/{{ user.id }}" class="btn btn-success">Deposit</a></td>  
             <td><a href="/destroy_deposit/{{ user.id }}" class="btn btn-danger">Delete</a></td>
