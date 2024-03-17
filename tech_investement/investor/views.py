@@ -68,9 +68,6 @@ def adminDashboard(request):
     user_profiles = UserProfile.objects.all()
     user_profiles_count = len(user_profiles)
 
-    print("william is here")
-
-
     context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'deposited':deposits_count , 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
 
