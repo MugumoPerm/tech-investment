@@ -439,7 +439,7 @@ def make_withdraw(request, id):
         # get the amount to withdraw
         amount = user.amount
         # get the user account
-        user_account = UserAccount.objects.get(username=request.user.username)
+        user_account = UserAccount.objects.get(username=user.username)
         # check if the user has enough balance all together with bonus
         total_balance = user_account.balance + user_account.bonus
         if total_balance >= amount:
@@ -455,19 +455,21 @@ def make_withdraw(request, id):
             withdraw = Withdrawal.objects.create(username=request.user.username, withdrawn=amount, phone_number=request.user.profile.phone_number)
             withdraw.save()
             messages.success(request, 'withdrawal successful')
-            return redirect('dashboard')
+            # delete the withdrawal request
+            user.delete()
+            return redirect('amount_withdrawn')
         else:
             messages.error(request, 'insufficient balance')
-            return redirect('withdraw')
+            return redirect('amount_withdrawn')
     except WithdrawalRequest.DoesNotExist:
         messages.error(request, 'withdrawal failed')
-        return redirect('withdraw')
+        return redirect('amount_withdrawn')
     except WithdrawalRequest.MultipleObjectsReturned:
         messages.error(request, 'Two or more transaction id found')
-        return redirect('withdraw')
+        return redirect('amount_withdrawn')
     except UserAccount.DoesNotExist:
         messages.error(request, 'withdrawal failed')
-        return redirect('withdraw')
+        return redirect('amount_withdrawn')
 
    
 def withdraw_request(request):
@@ -476,6 +478,12 @@ def withdraw_request(request):
         form = withdraw_form(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
+            # check if the user has enough balance all together with bonus
+            user_account = UserAccount.objects.get(username=request.user.username)
+            total_balance = user_account.balance + user_account.bonus
+            if total_balance < amount:
+                messages.error(request, 'insufficient balance')
+                return redirect('withdraw_status')
             # save the amount to the withdrawal request model
             withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=request.user.profile.phone_number)
             withdraw.save()
@@ -528,7 +536,7 @@ def destroy_deposit(request, id):
 def destroy_withdraw(request, id):
     user = WithdrawalRequest.objects.get(id=id)
     user.delete()
-    return redirect('withdrawn_amount')
+    return redirect('amount_withdrawn')
 
 #ajax requests
 def get_chart_data(request):

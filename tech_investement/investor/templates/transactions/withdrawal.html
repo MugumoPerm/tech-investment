@@ -36,7 +36,6 @@
             <td><input type="checkbox" class="checkthis" /></td>
             <td>{{ user.id }}</td> 
             <td>{{ user.username }}</td>
-			<td style="font-size: 1.4rem; font-weight: 900;">{{ user.transactions_id }}</td>
 			<td>{{ user.phone_number }}</td>
 			<td>{{ user.amount }}</td>
 			<td>{{ user.date }}</td>
@@ -44,7 +43,6 @@
             <td><a href="/make_withdraw/{{ user.id }}" class="btn btn-success">Withdraw</a></td>  
             <td><a href="/destroy_withdraw/{{ user.id }}" class="btn btn-danger">Delete</a></td>
 			</tr>  
-
 		{% endfor %}
         </tbody>
         </table>

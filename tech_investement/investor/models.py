@@ -110,6 +110,7 @@ class Withdrawal(models.Model):
     username = models.CharField(max_length=12, null=False, blank=False)
     phone_number = models.IntegerField(null=False, blank=False)
     withdrawn = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f"{self.username} - Amount: {self.withdrawn}, Date: {self.date}"
