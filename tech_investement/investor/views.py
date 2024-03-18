@@ -14,7 +14,7 @@ from django.contrib.auth import get_user_model
 
 
 # import models
-from .models import UserProfile, UserAccount, Transaction_ids, Deposit
+from .models import UserProfile, UserAccount, Transaction_ids, Deposit, Withdrawal, WithdrawalRequest
 
 # import forms
 from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm, user_deposit_form
@@ -52,7 +52,6 @@ def adminDashboard(request):
     #calculate how many users in the database
     users = User.objects.all()
     user_count = len(users)
-    
 
     #calculate total amount of money in the system
     total_amount = 0
@@ -433,8 +432,65 @@ def deposit(request):
         context = {'form': form}
     return render(request, 'admin/amount.html', context)
 
-def withdraw(request):
-    return render(request, 'withdraw.html')
+def make_withdraw(request, id):
+    try:
+        # get the user
+        user = WithdrawalRequest.objects.get(id=id)
+        # get the amount to withdraw
+        amount = user.amount
+        # get the user account
+        user_account = UserAccount.objects.get(username=request.user.username)
+        # check if the user has enough balance all together with bonus
+        total_balance = user_account.balance + user_account.bonus
+        if total_balance >= amount:
+            # withdraw the amount
+            user_account.balance -= amount
+            if user_account.balance < 0:
+                # withdraw the amount
+                user_account.bonus += user_account.balance
+                user_account.balance = 0
+            # save the user account
+            user_account.save()
+            # save the amount withdrawn
+            withdraw = Withdrawal.objects.create(username=request.user.username, withdrawn=amount, phone_number=request.user.profile.phone_number)
+            withdraw.save()
+            messages.success(request, 'withdrawal successful')
+            return redirect('dashboard')
+        else:
+            messages.error(request, 'insufficient balance')
+            return redirect('withdraw')
+    except WithdrawalRequest.DoesNotExist:
+        messages.error(request, 'withdrawal failed')
+        return redirect('withdraw')
+    except WithdrawalRequest.MultipleObjectsReturned:
+        messages.error(request, 'Two or more transaction id found')
+        return redirect('withdraw')
+    except UserAccount.DoesNotExist:
+        messages.error(request, 'withdrawal failed')
+        return redirect('withdraw')
+
+   
+def withdraw_request(request):
+    form = withdraw_form()
+    if request.method == 'POST':
+        form = withdraw_form(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            # save the amount to the withdrawal request model
+            withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=request.user.profile.phone_number)
+            withdraw.save()
+            messages.success(request, 'withdrawal request successful')
+            return redirect('dashboard')
+    context = {'form': form}
+    return render(request, 'user/withdraw.html', context)
+
+def withdraw_status(request):
+    withdraw = WithdrawalRequest.objects.all()
+    return render(request, 'user/withdraw_status.html', {'withdraw': withdraw})
+
+def amount_withdrawn(request):
+    user = WithdrawalRequest.objects.all()
+    return render(request, 'transactions/withdrawal.html', {'user': user})
 
 #assets
 def assets(request):
@@ -469,6 +525,11 @@ def destroy_deposit(request, id):
     user.delete()
     return redirect('deposited_amount')
 
+def destroy_withdraw(request, id):
+    user = WithdrawalRequest.objects.get(id=id)
+    user.delete()
+    return redirect('withdrawn_amount')
+
 #ajax requests
 def get_chart_data(request):
     # Replace this with your actual logic to fetch updated data
@@ -484,13 +545,9 @@ def get_transaction(request):
             if form.is_valid():
                 transaction_id = form.cleaned_data['transactions_id']
                 request.session['transaction_id'] = transaction_id
-
-                print('transaction id', transaction_id)
                 # check if the transaction id exists
                 if UserAccount.objects.filter(transactions_id=transaction_id).exists():
                     # display the deposit form
-                    print('transaction id', transaction_id)
-                    # return HttpResponse('valid transaction id')
                     return redirect('deposit')
                 else:
                    # display an error message

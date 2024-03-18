@@ -38,7 +38,7 @@
 
 {% if referral_bonus %}
 
-<p>Referral bonus: <span class="num" data-val="{{ referral_bonus }}">0.00</span></p>
+<p>Referral bonus: {{ referral_bonus }}</p>
 	
 {% else %}
 
@@ -49,7 +49,7 @@
 
 {% if user_profile %}
 
-	<p>	balance:<span class="num" data-val="{{user_profile.UserAccount.balance}}">0.00</span></p><br>
+	<p>	balance:<span class="" data-val="{{user_profile.UserAccount.balance}}">0.00</span></p><br>
 
 <p>Referral link:</p>
 
@@ -68,17 +68,17 @@
 {% endif %}
 
 
-<a href="{% url "transactions_id" %}" ><span style="color: green;" class="material-icons-outlined">arrow_circle_down</span></a>
+<a href="{% url "transactions_id" %}" >
+	<span style="color: green;" class="material-icons-outlined">add</span>
+</a>
 
-		  <a href="{% url "logout" %}">
+<a href="{% url "logout" %}" >
+	<span style="color: red;" class="material-icons-outlined">logout</span>
+</a>
 
-			  <span style="color: red;" class="material-icons-outlined">
-
-				  logout
-
-			  </span>
-		  </a>
-
+<a href="{% url "withdraw" %}" >
+	<span style="color: green;" class="material-icons-outlined">account_balance_wallet</span>
+</a>
 
 {% block script %}
 <script>

@@ -3,7 +3,7 @@ from django import forms
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import UserProfile, UserAccount, Deposit
+from .models import UserProfile, UserAccount, Deposit, Withdrawal, WithdrawalRequest
 
 #   *****authentication forms****
 # registration
@@ -57,8 +57,8 @@ class deposit_form(forms.ModelForm):
 
 class withdraw_form(forms.ModelForm):
     class Meta:
-        model = UserAccount
-        fields = ['amount_paid', 'balance','username']
+        model = WithdrawalRequest
+        fields = ['amount']
 
 # search form
 class searchForm(forms.Form):

@@ -89,7 +89,6 @@ class UserAccount(models.Model):
 # # transactions
 class Transaction_ids(models.Model):
     user = models.CharField(max_length=50)
-
     transactions_id = models.CharField(max_length=12)
     amount_deposited = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date = models.DateTimeField(auto_now_add=True)
@@ -105,6 +104,25 @@ class Deposit(models.Model):
     transactions_id = models.CharField(max_length=12, null=False, blank=False)
     def __str__(self):
         return f"{self.username} - Amount: {self.amount_paid}, Date: {self.date}"
+
+#  withdrawals
+class Withdrawal(models.Model):
+    username = models.CharField(max_length=12, null=False, blank=False)
+    phone_number = models.IntegerField(null=False, blank=False)
+    withdrawn = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.username} - Amount: {self.withdrawn}, Date: {self.date}"
+
+# amount withrawn
+class WithdrawalRequest(models.Model):
+    username = models.CharField(max_length=12, null=False, blank=False)
+    phone_number = models.IntegerField(null=False, blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.username} - Amount: {self.amount}, Date: {self.date}"
 
 
 # assets

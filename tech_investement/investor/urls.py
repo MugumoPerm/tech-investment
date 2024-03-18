@@ -36,10 +36,13 @@ urlpatterns = [
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),
     path('staff/admin/auth/workplace', views.admin_workplace, name='workplace'),
     path('staff/admin/auth/amount', views.deposit, name='deposit'),
-    path('withdraw/', views.withdraw, name='withdraw'),
+    path('withdraw/', views.withdraw_request, name='withdraw'),
+    path('withdraw_status/', views.withdraw_status, name='withdraw_status'),
     path('make_deposit/<int:id>', views.make_deposit, name='make_deposit'),
     path('deposited_amount/', views.deposited_amount, name='deposited_amount'),
-
+    path('make_withdraw/<int:id>', views.make_withdraw, name='make_withdraw'),
+    path('destroy_withdraw/<int:id>', views.destroy_withdraw, name='destroy_withdraw'),
+    path('amount_withdrawn/', views.amount_withdrawn, name='amount_withdrawn'),
     # ############################################
     # ################transactions################
     # ############################################
