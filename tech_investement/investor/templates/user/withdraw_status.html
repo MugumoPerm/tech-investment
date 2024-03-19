@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'table_layout.html' %}
 
 {% block title %} Withdraw status {% endblock title %}
 
@@ -6,6 +6,21 @@
 
 {% block content %}
 
-{{ withdraw }}
+<!-- htmx ajax request to get the processing and completed withdrawals using buttons -->
+<div class="container">
+	<div class="row">
+		<div class="col-md-12">
+			<div class= role="group" aria-label="Basic example">
+				<button type="button" class="btn btn-primary" hx-get="{% url 'withdraw_status_pending' %}" hx-target="#status" >Pending</button>
+				<br>
+				<button type="button" class="btn btn-success" hx-get="{% url 'withdraw_status_completed' %}" hx-target="#status">Completed</button>
+			</div>
+		</div>
+	</div>
+
+
+
+<div id="status">
+</div>
 
 {% endblock content %}

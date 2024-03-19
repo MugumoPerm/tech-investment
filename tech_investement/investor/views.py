@@ -440,6 +440,7 @@ def make_withdraw(request, id):
         amount = user.amount
         # get the user account
         user_account = UserAccount.objects.get(username=user.username)
+        phone_number = UserProfile.objects.get(username=user.username).phone_number
         # check if the user has enough balance all together with bonus
         total_balance = user_account.balance + user_account.bonus
         if total_balance >= amount:
@@ -452,7 +453,7 @@ def make_withdraw(request, id):
             # save the user account
             user_account.save()
             # save the amount withdrawn
-            withdraw = Withdrawal.objects.create(username=request.user.username, withdrawn=amount, phone_number=request.user.profile.phone_number)
+            withdraw = Withdrawal.objects.create(username=request.user.username, withdrawn=amount, phone_number=phone_number)
             withdraw.save()
             messages.success(request, 'withdrawal successful')
             # delete the withdrawal request
@@ -483,12 +484,12 @@ def withdraw_request(request):
             total_balance = user_account.balance + user_account.bonus
             if total_balance < amount:
                 messages.error(request, 'insufficient balance')
-                return redirect('withdraw_status')
+                return redirect('withdraw')
             # save the amount to the withdrawal request model
             withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=request.user.profile.phone_number)
             withdraw.save()
             messages.success(request, 'withdrawal request successful')
-            return redirect('dashboard')
+            return redirect('withdraw_status')
     context = {'form': form}
     return render(request, 'user/withdraw.html', context)
 
@@ -499,6 +500,15 @@ def withdraw_status(request):
 def amount_withdrawn(request):
     user = WithdrawalRequest.objects.all()
     return render(request, 'transactions/withdrawal.html', {'user': user})
+
+def withdraw_status_completed(request):
+    withdraw = Withdrawal.objects.filter(username=request.user.username)
+    return render(request, 'user/withdraw_completed.html', {'withdraw': withdraw})
+
+def withdraw_status_pending(request):
+    withdraw = WithdrawalRequest.objects.filter(username=request.user.username)
+    #return a HttpResponse of all the active users withdraw request 
+    return render(request, 'user/withdraw_pending.html', {'withdraw': withdraw})
 
 #assets
 def assets(request):

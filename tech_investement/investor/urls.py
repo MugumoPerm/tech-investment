@@ -43,6 +43,10 @@ urlpatterns = [
     path('make_withdraw/<int:id>', views.make_withdraw, name='make_withdraw'),
     path('destroy_withdraw/<int:id>', views.destroy_withdraw, name='destroy_withdraw'),
     path('amount_withdrawn/', views.amount_withdrawn, name='amount_withdrawn'),
+
+    # Ajax
+    path('withdraw_status/completed/', views.withdraw_status_completed, name='withdraw_status_completed'),
+    path('withdraw_status/pending/', views.withdraw_status_pending, name='withdraw_status_pending'),
     # ############################################
     # ################transactions################
     # ############################################
