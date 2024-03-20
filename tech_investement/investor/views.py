@@ -508,7 +508,7 @@ def amount_withdrawn(request):
 
 def withdraw_status_completed(request):
     withdraw = Withdrawal.objects.filter(username=request.user.username).order_by('-date')
-    return render(request, 'transactions/withdraw_completed.html', {'withdraw': withdraw})
+    return render(request, 'user/withdraw_completed.html', {'withdraw': withdraw})
 
 def withdraw_completed(request):
     withdraw = Withdrawal.objects.all().order_by('-date')
