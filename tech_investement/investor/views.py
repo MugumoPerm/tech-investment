@@ -494,15 +494,15 @@ def withdraw_request(request):
     return render(request, 'user/withdraw.html', context)
 
 def withdraw_status(request):
-    withdraw = WithdrawalRequest.objects.all()
+    withdraw = WithdrawalRequest.objects.all().order_by('date')
     return render(request, 'user/withdraw_status.html', {'withdraw': withdraw})
 
 def amount_withdrawn(request):
-    user = WithdrawalRequest.objects.all()
+    user = WithdrawalRequest.objects.all().order_by('-date')
     return render(request, 'transactions/withdrawal.html', {'user': user})
 
 def withdraw_status_completed(request):
-    withdraw = Withdrawal.objects.filter(username=request.user.username)
+    withdraw = Withdrawal.objects.filter(username=request.user.username).order_by('-date')
     return render(request, 'user/withdraw_completed.html', {'withdraw': withdraw})
 
 def withdraw_status_pending(request):
