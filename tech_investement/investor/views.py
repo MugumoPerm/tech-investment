@@ -60,7 +60,7 @@ def adminDashboard(request):
     total_amount = total_amount
     
     # calculate the total number deposits
-    deposits = Deposit.objects.all()
+    deposits = Deposit.objects.all().order_by('-date')
     deposits_count = len(deposits)
 
     #get the total number of users in UserProfiles
@@ -275,12 +275,15 @@ def transactions_id(request):
 @login_required(login_url='adminLogin')
 def transactions_history(request):
     # fetch all the transactions
-    transactions = Transaction_ids.objects.all()
-    return render(request, 'transactions/transactions_history.html', {'transactions': transactions})
+    return render(request, 'transactions/transactions_history.html')
 
 def deposited_amount(request):
-    user = Deposit.objects.all()
+    user = Deposit.objects.all().order_by('-date')
     return render(request, 'transactions/deposit.html', {'user': user})
+
+def deposit_completed(request):
+    transactions = Transaction_ids.objects.all().order_by('-date')
+    return render(request, 'transactions/deposit_completed.html', {'transactions': transactions})
 
 def make_deposit(request, id):
     try:
@@ -436,12 +439,12 @@ def deposit(request):
 def make_withdraw(request, id):
     try:
         # get the user
-        user = WithdrawalRequest.objects.get(id=id)
+        withdrawing_user = WithdrawalRequest.objects.get(id=id)
         # get the amount to withdraw
-        amount = user.amount
+        amount = withdrawing_user.amount
         # get the user account
-        user_account = UserAccount.objects.get(username=user.username)
-        phone_number = UserProfile.objects.get(username=user.username).phone_number
+        user_account = UserAccount.objects.get(username=withdrawing_user.username)
+        phone_number = UserProfile.objects.get(username=withdrawing_user.username).phone_number
         # check if the user has enough balance all together with bonus
         total_balance = user_account.balance + user_account.bonus
         if total_balance >= amount:
@@ -454,11 +457,11 @@ def make_withdraw(request, id):
             # save the user account
             user_account.save()
             # save the amount withdrawn
-            withdraw = Withdrawal.objects.create(username=request.user.username, withdrawn=amount, phone_number=phone_number)
+            withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number)
             withdraw.save()
             messages.success(request, 'withdrawal successful')
             # delete the withdrawal request
-            user.delete()
+            withdrawing_user.delete()
             return redirect('amount_withdrawn')
         else:
             messages.error(request, 'insufficient balance')
@@ -505,7 +508,11 @@ def amount_withdrawn(request):
 
 def withdraw_status_completed(request):
     withdraw = Withdrawal.objects.filter(username=request.user.username).order_by('-date')
-    return render(request, 'user/withdraw_completed.html', {'withdraw': withdraw})
+    return render(request, 'transactions/withdraw_completed.html', {'withdraw': withdraw})
+
+def withdraw_completed(request):
+    withdraw = Withdrawal.objects.all().order_by('-date')
+    return render(request, 'transactions/withdraw_completed.html', {'withdraw': withdraw})
 
 def withdraw_status_pending(request):
     withdraw = WithdrawalRequest.objects.filter(username=request.user.username)
@@ -590,7 +597,7 @@ def customers(request):
 
 # refresh how many users have deposited
 def deposited(request):
-    deposits = Deposit.objects.all()
+    deposits = Deposit.objects.all().order_by('-date')
     deposits_count = len(deposits)
     return HttpResponse(deposits_count)
 

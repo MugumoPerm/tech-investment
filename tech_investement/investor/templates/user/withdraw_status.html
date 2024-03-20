@@ -16,8 +16,10 @@
 				<button type="button" class="btn btn-success" hx-get="{% url 'withdraw_status_completed' %}" hx-target="#status">Completed</button>
 			</div>
 		</div>
-	</div>
-
+	</div><br>
+<a href="{% url 'dashboard' %}">
+<button type="button" class="btn btn-secondary" hx-get="{% url 'withdraw_status_completed' %}" hx-target="#status">Back</button>
+</a>
 
 
 <div id="status">

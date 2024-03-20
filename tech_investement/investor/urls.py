@@ -47,6 +47,8 @@ urlpatterns = [
     # Ajax
     path('withdraw_status/completed/', views.withdraw_status_completed, name='withdraw_status_completed'),
     path('withdraw_status/pending/', views.withdraw_status_pending, name='withdraw_status_pending'),
+    path('withdraw_completed/', views.withdraw_completed, name='withdraw_completed'),
+    path('deposit_completed/', views.deposit_completed, name='deposit_completed'),
     # ############################################
     # ################transactions################
     # ############################################
