@@ -84,23 +84,23 @@ main.cards section.card button {
 }
 
 main.cards section.card.contact button {
-    background: linear-gradient(to right, #9F66FF, #DFCBFF);
+    background: linear-gradient(to right, #10a37f, #cbffea);
 }
 main.cards section.card.shop button {
     background: linear-gradient(to right, #3E8AFF, #BBDEFF);
 }
 main.cards section.card.about button {
-    background: linear-gradient(to right, #FE5F8F, #FFC7D9);
+    background: linear-gradient(to right, #f3ba2f, #ffecc7);
 }
 
 main.cards section.card.contact {
-    box-shadow: 20px 20px 50px -30px #DBC4FF;
+    box-shadow: 20px 20px 50px -30px #5bdba8;
 }
 main.cards section.card.shop {
-    box-shadow: 20px 20px 50px -30px #AFD6FF;
+    box-shadow: 20px 20px 50px -30px #4681bf;
 }
 main.cards section.card.about {
-    box-shadow: 20px 20px 50px -30px #FFC1D5;
+    box-shadow: 20px 20px 50px -30px #e3a045;
 }
 
 @media screen and (max-width: 720px) {
@@ -128,6 +128,7 @@ main.cards section.card.about {
 </style>
 </head>
 <body>
+	<main class="cards">
 	{% block content %}	
     <!-- <main class="cards"> -->
     <!--     <section class="card contact"> -->
@@ -156,6 +157,7 @@ main.cards section.card.about {
     <!--     </section> -->
     <!-- </main> -->
 	{% endblock %}
+	</main>
 </body>
 </html>
 

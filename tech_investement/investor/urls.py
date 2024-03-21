@@ -4,6 +4,9 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     #users
     path('', views.landing_page, name='landing_page'),
@@ -83,3 +86,6 @@ urlpatterns = [
     # refresh_balance
     path('refresh_balance/', views.refresh_balance, name='refresh_balance'),
    ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
