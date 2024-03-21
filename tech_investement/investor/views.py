@@ -14,7 +14,7 @@ from django.contrib.auth import get_user_model
 
 
 # import models
-from .models import UserProfile, UserAccount, Transaction_ids, Deposit, Withdrawal, WithdrawalRequest
+from .models import UserProfile, UserAccount, Transaction_ids, Deposit, Withdrawal, WithdrawalRequest, Item, Purchase
 
 # import forms
 from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm, user_deposit_form
@@ -63,11 +63,15 @@ def adminDashboard(request):
     deposits = Deposit.objects.all().order_by('-date')
     deposits_count = len(deposits)
 
+    # calculate the total number of withdrawals
+    withdrawals = WithdrawalRequest.objects.all()
+    withdrawals_count = len(withdrawals)
+
     #get the total number of users in UserProfiles
     user_profiles = UserProfile.objects.all()
     user_profiles_count = len(user_profiles)
 
-    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'deposited':deposits_count , 'products': [100, 200, 30, 40, 500]}
+    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'deposited':deposits_count ,'withdrawed':withdrawals_count, 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
 
 
@@ -519,9 +523,27 @@ def withdraw_status_pending(request):
     #return a HttpResponse of all the active users withdraw request 
     return render(request, 'user/withdraw_pending.html', {'withdraw': withdraw})
 
-#assets
+# Items
+
 def assets(request):
-    return render(request, 'assets.html')
+    items = Item.objects.all()
+    return render(request, 'assets/assets.html', {'items': items})
+
+
+@login_required
+def purchase_item(request, item_id):
+    # item = Item.objects.get(pk=item_id)
+    # if request.method == 'POST':
+    #     # Perform purchase operation
+    #     purchase = Purchase.objects.create(user=request.user, item=item)
+    #     purchase.save()
+    #     return redirect('purchase_success')
+    return render(request, 'assets/purchase_item.html', {'item': item})
+
+@login_required
+def purchase_success(request):
+    purchases = Purchase.objects.filter(user=request.user)
+    return render(request, 'purchase_success.html', {'purchases': purchases})
 
 def recommended_users(request):
     profile = []
@@ -614,3 +636,5 @@ def refresh_balance(request):
         total_amount += user.UserAccount.balance
     balance = total_amount
     return HttpResponse(balance)
+
+

@@ -40,7 +40,7 @@
       <aside id="sidebar">
         <div class="sidebar-title">
           <div class="sidebar-brand">
-            <span class="material-icons-outlined">shopping_cart</span> STORE
+            <span class="material-icons-outlined">shopping_cart</span> Codius
           </div>
           <span class="material-icons-outlined" onclick="closeSidebar()">close</span>
         </div>
@@ -126,7 +126,7 @@
               <h3>DEPOSITED</h3>
               <span class="material-icons-outlined">category</span>
             </div>
-			<div hx-get="{% url 'deposited' %}" hx-target="#balance" hx-trigger="load delay:2s"> 
+			<div hx-get="{% url 'deposited' %}" hx-target="#balance" hx-trigger="reload"> 
 			
 				<h1> 
 					<div id="deposited">
@@ -144,11 +144,11 @@
               <h3>WITHDRAWN</h3>
               <span class="material-icons-outlined">groups</span>
             </div>
-            <div hx-get="{% url 'refresh_balance' %}" hx-target="#balance" hx-trigger="load delay:2s"> 
+            <div> 
 			
 				<h1> 
-					<div id="balance">
-						{{total_amount}}
+					<div>
+						{{withdrawed}}
 					</div>
 				</h1>
 

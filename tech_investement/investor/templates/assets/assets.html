@@ -1,0 +1,21 @@
+{% extends 'cards.html' %}
+
+{% block content %}
+
+{%for asset in items %}
+
+
+<main class="cards">
+	<section class="card {{ asset.title }}">
+            <div class="icon">
+				<img src="assets/Chat.png" alt="{{ asset.name }}">
+            </div>
+			<h3>{{ asset.name }}</h3>
+            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
+            <button>Learn More</button>
+        </section>
+</main>
+
+{%endfor%}
+
+{% endblock %}

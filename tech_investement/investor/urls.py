@@ -56,6 +56,8 @@ urlpatterns = [
 
     #assets
     path('assets/', views.assets, name='assets'),
+    path('purchase/<int:item_id>/', views.purchase_item, name='purchase_item'),
+    path('purchase/success/', views.purchase_success, name='purchase_success'),
 
     #admin
     
@@ -80,5 +82,4 @@ urlpatterns = [
     
     # refresh_balance
     path('refresh_balance/', views.refresh_balance, name='refresh_balance'),
-
-]
+   ]
