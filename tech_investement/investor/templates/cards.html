@@ -105,6 +105,7 @@ main.cards section.card.about {
 
 @media screen and (max-width: 720px) {
     main.cards {
+		margin-top: auto;
         flex-direction: column;
     }
 
@@ -128,8 +129,10 @@ main.cards section.card.about {
 </style>
 </head>
 <body>
+	{% block heading %}
+	{% endblock %}
 	<main class="cards">
-	{% block content %}	
+	{% block card %}	
     <!-- <main class="cards"> -->
     <!--     <section class="card contact"> -->
     <!--         <div class="icon"> -->

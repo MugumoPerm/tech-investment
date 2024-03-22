@@ -1,6 +1,12 @@
 {% extends 'cards.html' %}
 
-{% block content %}
+{% block heading %}
+
+
+{% endblock %}
+
+
+{% block card %}
 
 {%for asset in items %}
 
@@ -10,8 +16,10 @@
 				<img src="{{ asset.image.url }}" alt="{{ asset.name }}">
             </div>
 			<h3>{{ asset.name }}</h3>
-            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span>
-            <button>Learn More</button>
+			<span>{{ asset.description }}.</span>
+			<span>Cost: {{ asset.price }}</span>
+			<span>Profit: {{ asset.release_amount }}</span>
+            <button>Purchase</button>
         </section>
 
 {%endfor%}

@@ -36,8 +36,13 @@ def adminLogin(request):
             # user = authenticate(username=username, password=password)
             if username == 'permo' and password == 'permo123':
                 # login(request, user)
-                messages.success(request, 'You have successfully logged in')
-                return redirect('adminDashboard')
+                next_url = request.GET.get('next')
+                if next_url:
+                    return redirect(next_url)
+                else:
+
+                    messages.success(request, 'You have successfully logged in')
+                    return redirect('adminDashboard')
             else:
                 messages.error(request, 'Invalid username or password')
                 return redirect('admin_login')
@@ -45,7 +50,7 @@ def adminLogin(request):
         form = loginForm()
     return render(request, 'admin/admin_login.html', {'form': form, 'messages': messages.get_messages(request)})
 
-# @login_required(login_url='admin_login')
+@login_required(login_url='admin_login')
 def adminDashboard(request):
     message = messages.get_messages(request)
 
@@ -276,7 +281,7 @@ def transactions_id(request):
 
 
 # get the transaction id and display the deposit form
-@login_required(login_url='adminLogin')
+@login_required(login_url='admin_login')
 def transactions_history(request):
     # fetch all the transactions
     return render(request, 'transactions/transactions_history.html')
@@ -440,6 +445,7 @@ def deposit(request):
         context = {'form': form}
     return render(request, 'admin/amount.html', context)
 
+@login_required(login_url='admin_login')
 def make_withdraw(request, id):
     try:
         # get the user
@@ -487,11 +493,18 @@ def withdraw_request(request):
         form = withdraw_form(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
+            #first check if the user has already requested for a withdrawal
+            if WithdrawalRequest.objects.filter(username=request.user.username).exists():
+                messages.error(request, 'Wait kindly as we process the previous withdrawal')
+                return redirect('withdraw')
             # check if the user has enough balance all together with bonus
             user_account = UserAccount.objects.get(username=request.user.username)
             total_balance = user_account.balance + user_account.bonus
             if total_balance < amount:
                 messages.error(request, 'insufficient balance')
+                return redirect('withdraw')
+            elif amount < 1000:
+                messages.error(request, 'minimum withdrawal amount is 1000')
                 return redirect('withdraw')
             # save the amount to the withdrawal request model
             withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=request.user.profile.phone_number)
@@ -505,7 +518,7 @@ def withdraw_status(request):
     withdraw = WithdrawalRequest.objects.all().order_by('date')
     return render(request, 'user/withdraw_status.html', {'withdraw': withdraw})
 
-@login_required(login_url='adminLogin')
+@login_required(login_url='admin_login')
 def amount_withdrawn(request):
     user = WithdrawalRequest.objects.all().order_by('-date')
     return render(request, 'transactions/withdrawal.html', {'user': user})

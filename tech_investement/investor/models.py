@@ -139,9 +139,15 @@ class Item(models.Model):
     def release(self):
         self.release_date = timezone.now() + timezone.timedelta(days=2)
         self.save()
+        # update balance when released
+        self.release_amount = self.price * 0.1
+        self.save()
+
+
 
     def is_released(self):
         return self.release_date and self.release_date <= timezone.now()
+    
 
     def __str__(self):
         return self.name
