@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-ixbwzzns+pcr206)uam#@gftm&h3!k711!x290@z%w-=z#e=5+
 DEBUG = True
 
 # <<<<<<< master
-ALLOWED_HOSTS = ["192.168.100.119", "127.0.0.1","192.168.16.107","192.168.16.105","192.168.100.119","192.168.43.53","10.0.39.242", ".vercel.app",]
+ALLOWED_HOSTS = ["192.168.100.119", "127.0.0.1","192.168.16.107","192.168.16.105","192.168.100.119","192.168.43.53","10.0.39.242", ".vercel.app","*"]
 # =======
 
 # ALLOWED_HOSTS = ["192.168.100.119", "127.0.0.1","192.168.16.102","mykey.pythonanywhere.com"]
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     #     My apps
     'widget_tweaks',
     'investor.apps.InvestorConfig',
+    'humanize',
 
 
 ]

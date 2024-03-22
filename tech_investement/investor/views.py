@@ -36,13 +36,8 @@ def adminLogin(request):
             # user = authenticate(username=username, password=password)
             if username == 'permo' and password == 'permo123':
                 # login(request, user)
-                next_url = request.GET.get('next')
-                if next_url:
-                    return redirect(next_url)
-                else:
-
-                    messages.success(request, 'You have successfully logged in')
-                    return redirect('adminDashboard')
+                messages.success(request, 'You have successfully logged in')
+                return redirect('adminDashboard')
             else:
                 messages.error(request, 'Invalid username or password')
                 return redirect('admin_login')
@@ -50,7 +45,6 @@ def adminLogin(request):
         form = loginForm()
     return render(request, 'admin/admin_login.html', {'form': form, 'messages': messages.get_messages(request)})
 
-@login_required(login_url='admin_login')
 def adminDashboard(request):
     message = messages.get_messages(request)
 
@@ -62,7 +56,7 @@ def adminDashboard(request):
     total_amount = 0
     for user in UserProfile.objects.all():
         total_amount += user.UserAccount.balance
-    total_amount = total_amount
+    total_amount = "{:,.2f}".format(total_amount)
     
     # calculate the total number deposits
     deposits = Deposit.objects.all().order_by('-date')
@@ -116,8 +110,8 @@ def dashboard(request):
             recommended_users.append(prof)
         #count the number of recommended users
     recommended_users = len(recommended_users)
-    bonus = UserAccount.objects.get(username=request.user).bonus
-
+    bonus = "{:,.2f}".format(UserAccount.objects.get(username=request.user).bonus)
+    balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user).balance)
     if UserProfile.objects.get(username=request.user.username):
         user_profile = UserProfile.objects.get(username=request.user.username)
     else:
@@ -125,7 +119,7 @@ def dashboard(request):
 
 
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'products': [100, 200, 30, 40, 500]}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'products': [100, 200, 30, 40, 500]}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
@@ -150,6 +144,10 @@ def login_view(request):
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            
+            if username == 'permo' and password == 'permo123':
+                messages.success(request, 'You have successfully logged in')
+                return redirect('adminDashboard')
 
             # authenticate user
             user = authenticate(username=username, password=password)
@@ -445,7 +443,6 @@ def deposit(request):
         context = {'form': form}
     return render(request, 'admin/amount.html', context)
 
-@login_required(login_url='admin_login')
 def make_withdraw(request, id):
     try:
         # get the user
@@ -537,10 +534,12 @@ def withdraw_status_pending(request):
     return render(request, 'user/withdraw_pending.html', {'withdraw': withdraw})
 
 # Items
-
+@login_required(login_url='login')
 def assets(request):
     items = Item.objects.all()
-    return render(request, 'assets/assets.html', {'items': items})
+    #get user balance
+    user_balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user.username).balance)
+    return render(request, 'assets/assets.html', {'items': items, 'balance': user_balance})
 
 
 @login_required
