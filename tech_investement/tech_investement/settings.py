@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     #     My apps
     'widget_tweaks',
     'investor.apps.InvestorConfig',
-    'humanize',
 
 
 ]
