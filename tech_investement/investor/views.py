@@ -25,6 +25,7 @@ from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordFor
 
 #Admin
 # @login_required(login_url='login')
+@csrf_exempt
 def adminLogin(request):
     if request.method == 'POST':
         form = loginForm(request.POST)
@@ -374,6 +375,7 @@ def transactions_completed(request):
 
 
 # deposit logic
+@csrf_exempt
 def deposit(request):
     transaction = request.session.get('transaction_id')
     form = deposit_form()
@@ -484,7 +486,7 @@ def make_withdraw(request, id):
         messages.error(request, 'withdrawal failed')
         return redirect('amount_withdrawn')
 
-   
+@csrf_exempt
 def withdraw_request(request):
     form = withdraw_form()
     if request.method == 'POST':
@@ -599,6 +601,7 @@ def get_chart_data(request):
 
 
 # get the transaction id and display the deposit form
+@csrf_exempt
 def get_transaction(request):
     # get the posted data
     if request.method == 'POST':
