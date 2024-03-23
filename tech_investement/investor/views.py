@@ -169,6 +169,7 @@ def logout_view(request):
     messages.success(request, 'You have successfully logged out')
     return redirect('login')
 
+@csrf_exempt
 def register(request, *args, **kwargs):
     code = str(kwargs.get('ref_code'))
     try:
@@ -246,6 +247,7 @@ def reset_done(request):
 # #########################transactions#########################
 
 # save the transaction id
+@csrf_exempt
 def transactions_id(request):
     form = user_deposit_form()
     if request.method == 'POST':
@@ -290,7 +292,7 @@ def deposited_amount(request):
 def deposit_completed(request):
     transactions = Transaction_ids.objects.all().order_by('-date')
     return render(request, 'transactions/deposit_completed.html', {'transactions': transactions})
-
+@csrf_exempt
 def make_deposit(request, id):
     try:
         # get the user
