@@ -137,7 +137,7 @@ def user_profile(request):
 
 
 #authentications
-
+@csrf_exempt
 def login_view(request):
     if request.method == 'POST':
         form = loginForm(request.POST)
