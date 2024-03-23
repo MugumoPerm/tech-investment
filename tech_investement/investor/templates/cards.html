@@ -7,7 +7,13 @@
     <title>Responsive Cards</title>
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 <style>
+:root {
+	--bg: black;
+	--txt: white;
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -16,7 +22,7 @@
 }
 
 body {
-    background: #F6F9FF;
+    background: var(--bg);
     height: 100vh;
     width: 100%;
 
@@ -24,7 +30,7 @@ body {
     justify-content: center;
     align-items: center;
 
-    color: #434343;
+    color: var(--txt);
 
     font-size: 16px;
 }
@@ -38,10 +44,10 @@ header {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	background: rgba(255, 255, 255, 0.8);
+	background: var(--bg);
 	backdrop-filter: blur(10px); /* Add blur effect */
     transition: background-color 0.3s ease, backdrop-filter 0.3s ease;
-	box-shadow: 0 0 20px -10px #000;
+	box-shadow: 0 0 20px -10px var(--txt);
 }
 
 main.cards {
@@ -54,7 +60,7 @@ main.cards section.card {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    background: white;
+    background: var(--bg);
     padding: 1rem 1.5rem;
     border-radius: 8px;
     max-height: 468px;
@@ -169,39 +175,41 @@ main.cards section.card.about {
 		<div class="container">
 			<h2 style="margin-left: 10px;">{%block header %} {% endblock %} </h1>
 			<h3 style="margin-left: 10px; color: green;">{% block balance %}{% endblock %}</h2>
+			
 		</div>
+<span style="margin-left: 40px;" id="colorSwitchButton" class="material-symbols-outlined">
+contrast
+</span>
 	</header>
 
 	<main class="cards">
 	{% block card %}	
-    <!-- <main class="cards"> -->
-    <!--     <section class="card contact"> -->
-    <!--         <div class="icon"> -->
-    <!--             <img src="assets/Chat.png" alt="Contact us."> -->
-    <!--         </div> -->
-    <!--         <h3>Contact us.</h3> -->
-    <!--         <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span> -->
-    <!--         <button>Learn More</button> -->
-    <!--     </section> -->
-    <!--     <section class="card shop"> -->
-    <!--         <div class="icon"> -->
-    <!--             <img src="assets/Bag.png" alt="Shop here."> -->
-    <!--         </div> -->
-    <!--         <h3>Shop here.</h3> -->
-    <!--         <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span> -->
-    <!--         <button>Learn More</button> -->
-    <!--     </section> -->
-    <!--     <section class="card about"> -->
-    <!--         <div class="icon"> -->
-    <!--             <img src="assets/Play.png" alt="About us."> -->
-    <!--         </div> -->
-    <!--         <h3>About us.</h3> -->
-    <!--         <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</span> -->
-    <!--         <button>Learn More</button> -->
-    <!--     </section> -->
-    <!-- </main> -->
-	{% endblock %}
+   	{% endblock %}
 	</main>
+<script>
+        const button = document.getElementById('colorSwitchButton');
+        const root = document.documentElement;
+
+        button.addEventListener('click', function() {
+            const currentBgColor = getComputedStyle(root).getPropertyValue('--bg').trim();
+            const currentTxtColor = getComputedStyle(root).getPropertyValue('--txt').trim();
+
+            // Toggle colors
+            root.style.setProperty('--bg', currentTxtColor);
+            root.style.setProperty('--txt', currentBgColor);
+
+            // Save the current color scheme to localStorage
+            localStorage.setItem('colorScheme', JSON.stringify({ bg: currentTxtColor, txt: currentBgColor }));
+        });
+
+        // Check if there's a color scheme saved in localStorage and apply it
+        const savedColorScheme = localStorage.getItem('colorScheme');
+        if (savedColorScheme) {
+            const { bg, txt } = JSON.parse(savedColorScheme);
+            root.style.setProperty('--bg', bg);
+            root.style.setProperty('--txt', txt);
+        }
+    </script>
 </body>
 </html>
 

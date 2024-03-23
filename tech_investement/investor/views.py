@@ -279,7 +279,6 @@ def transactions_id(request):
 
 
 # get the transaction id and display the deposit form
-@login_required(login_url='admin_login')
 def transactions_history(request):
     # fetch all the transactions
     return render(request, 'transactions/transactions_history.html')
@@ -515,7 +514,6 @@ def withdraw_status(request):
     withdraw = WithdrawalRequest.objects.all().order_by('date')
     return render(request, 'user/withdraw_status.html', {'withdraw': withdraw})
 
-@login_required(login_url='admin_login')
 def amount_withdrawn(request):
     user = WithdrawalRequest.objects.all().order_by('-date')
     return render(request, 'transactions/withdrawal.html', {'user': user})
@@ -569,25 +567,23 @@ def recommended_users(request):
 # ***************edit users***************
 
 # delete a user
-@login_required(login_url='admin_login')
 def destroy(request, id): 
     user = User.objects.get(id=id)
     user.delete()
     return redirect("all_users")  
 
 # delete a transaction
-@login_required(login_url='admin_login')
 def destroy_transaction(request, id):
     transaction = Transaction_ids.objects.get(id=id)
     transaction.delete()
     return redirect('transactions_history')
-@login_required(login_url='admin_login')
+
 # delete a deposit
 def destroy_deposit(request, id):
     user = Deposit.objects.get(id=id)
     user.delete()
     return redirect('deposited_amount')
-@login_required(login_url='adminLogin')
+
 def destroy_withdraw(request, id):
     user = WithdrawalRequest.objects.get(id=id)
     user.delete()

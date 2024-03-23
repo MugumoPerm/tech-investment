@@ -32,5 +32,29 @@ $(document).ready(function() {
 </script>
 {% block extrascripts %}
 {% endblock extrascripts %}
+<script>
+        const button = document.getElementById('colorSwitchButton');
+        const root = document.documentElement;
+
+        button.addEventListener('click', function() {
+            const currentBgColor = getComputedStyle(root).getPropertyValue('--bg').trim();
+            const currentTxtColor = getComputedStyle(root).getPropertyValue('--txt').trim();
+
+            // Toggle colors
+            root.style.setProperty('--bg', currentTxtColor);
+            root.style.setProperty('--txt', currentBgColor);
+
+            // Save the current color scheme to localStorage
+            localStorage.setItem('colorScheme', JSON.stringify({ bg: currentTxtColor, txt: currentBgColor }));
+        });
+
+        // Check if there's a color scheme saved in localStorage and apply it
+        const savedColorScheme = localStorage.getItem('colorScheme');
+        if (savedColorScheme) {
+            const { bg, txt } = JSON.parse(savedColorScheme);
+            root.style.setProperty('--bg', bg);
+            root.style.setProperty('--txt', txt);
+        }
+    </script>
 </body> 
 </html>
