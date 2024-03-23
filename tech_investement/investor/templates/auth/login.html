@@ -25,17 +25,7 @@
 				<div class="col-md-12 col-lg-10">
 					<div class="wrap d-md-flex">
 						<div class="text-wrap p-4 p-lg-5 text-center d-flex align-items-center order-md-last">
-							<div class="text w-100">
-								<div class="message">
-											{% for message in messages %}
-											{% if "success" in message.tags %}
-											<span class='success_message_box' id='message' >{{ message }}</span>
-											{% else %}
-												<span style="color: orange; font-size: 2rem;" class='error_message_box'>{{ message }}</span>		
-											{% endif %}
-											{% endfor %}
-								
-								</div>
+							<div class="text w-100">	
 								<h2>Welcome to login</h2>
 									<p>Don't have an account?</p>
 									<a class="btn btn-white btn-outline-white" hx-get="{% url 'register' %}" hx-target="#authForms" hx-swap="innerHTML" hx-push-url="true">sign up</a>
@@ -53,6 +43,17 @@
 									</p>
 								</div>
 			      	</div>
+					<div class="message">
+											{% for message in messages %}
+											{% if "success" in message.tags %}
+											<span class='success_message_box' id='message' >{{ message }}</span>
+											{% else %}
+												<span style="color: orange; font-size: 1rem;" class='error_message_box'>{{ message }}</span>		
+											{% endif %}
+											{% endfor %}
+								
+								</div>
+
 					<form action="{% url 'login' %}" method="POST" class="signin-form">
 						{% csrf_token %}
 			      		<div class="form-group mb-3">
