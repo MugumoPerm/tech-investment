@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+
+{% load widget_tweaks %}
+
+{% block body %}
+
+{% if messages %}
+	{% for message in messages %}
+		<div class="alert alert-{{ message.tags }}">
+			{{ message }}
+		</div>
+	{% endfor %}
+{% endif %}
+
+	<h1>Withdraw</h1>
+	<form action="{% url 'withdraw' %}" method="post">
+		{% csrf_token %}
+		<label for="amount">Amount</label>
+		{% render_field form.amount class="form-control" %}
+		<br>
+		<input type="submit" value="Withdraw">
+	</form>
+<button onclick="location.href='{% url 'dashboard' %}'">Back</button>
+	
+{% endblock body %}

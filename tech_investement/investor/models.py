@@ -86,28 +86,93 @@ class UserAccount(models.Model):
     def __str__(self):
         return f"{self.user.username} - Amount Paid: {self.amount_paid}, Balance: {self.balance}"
 
-# deposit and withdraw
+# # transactions
+class Transaction_ids(models.Model):
+    user = models.CharField(max_length=50)
+    transactions_id = models.CharField(max_length=12)
+    amount_deposited = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    date = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f" {self.user}, Transactions ID: {self.transactions_id}, Date: {self.date}"
+
+# # deposits
+class Deposit(models.Model):
+    username = models.CharField(max_length=12, null=False, blank=False)
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    phone_number = models.IntegerField(null=False, blank=False)
+    date = models.DateTimeField(auto_now_add=True)
+    transactions_id = models.CharField(max_length=12, null=False, blank=False)
+    def __str__(self):
+        return f"{self.username} - Amount: {self.amount_paid}, Date: {self.date}"
+
+#  withdrawals
+class Withdrawal(models.Model):
+    username = models.CharField(max_length=12, null=False, blank=False)
+    phone_number = models.IntegerField(null=False, blank=False)
+    withdrawn = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.username} - Amount: {self.withdrawn}, Date: {self.date}"
+
+# amount withrawn
+class WithdrawalRequest(models.Model):
+    username = models.CharField(max_length=12, null=False, blank=False)
+    phone_number = models.IntegerField(null=False, blank=False)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.BooleanField(default=False)
+    date = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"{self.username} - Amount: {self.amount}, Date: {self.date}"
 
 
 # assets
-class Asset(models.Model):
-    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='Asset')
-    asset_name = models.CharField(max_length=12, null=False, blank=False, default=True)
-    asset_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    # date = models.DateTimeField(auto_now_add=True)
+class Item(models.Model):
+    name = models.CharField(max_length=12, null=False, blank=False, default=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    title = models.CharField(max_length=12, null=False, blank=False, default=True)
+    description = models.TextField()
+    image = models.ImageField(upload_to='assets/', null=True, blank=True)
+    release_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    release_date = models.DateTimeField(auto_now_add=True)
+    
+    def release(self):
+        self.release_date = timezone.now() + timezone.timedelta(days=2)
+        self.save()
+        # update balance when released
+        self.release_amount = self.price * 0.1
+        self.save()
+
+
+
+    def is_released(self):
+        return self.release_date and self.release_date <= timezone.now()
+    
 
     def __str__(self):
-        return f"{self.user.username} - Asset Name: {self.asset_name}, Asset Value: {self.asset_value}"
+        return self.name
 
-# # stocks
-# class Stock(models.Model):
-#     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='Stock')
-#     stock_name = models.CharField(max_length=12, null=False, blank=False, default=True)
-#     stock_value = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-#     date = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"Asset Name: {self.name}, Asset Value: {self.price}, Release Amount: {self.release_amount}, Release Date: {self.release_date}"
 
-#     def __str__(self):
-#         return f"{self.user.username} - Stock Name: {self.stock_name}, Stock Value: {self.stock_value}, Date: {self.date}"
+class Purchase(models.Model):
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    purchase_date = models.DateTimeField(default=timezone.now)
+    released = models.BooleanField(default=False)
+
+    def release_item(self):
+        if self.item.is_released() and not self.released:
+            # Perform release operation
+            # For example, add released amount to user's balance
+            # or grant access to some resource, etc.
+            self.user.UserAccount.balance += self.item.release_amount
+            self.user.UserAccount.save()
+            self.released = True
+            self.save()
+
+    def __str__(self):
+        return f"{self.user.username} purchased {self.item.name} on {self.purchase_date}"
 
 
 

@@ -31,11 +31,15 @@ Deposit
 					
 					{% render_field form.transactions_id class='form-control' placeholder='Transaction id' %}
 					<!-- <input type="text" class="form-control" id="amount" name="amount" required> -->
+					<br>
+					<br>
+					<label for="amount">Amount Paid</label>
+					{% render_field form.amount_paid class='form-control' placeholder='Amount' %}
 				</div>
 				<button type="submit" class="btn btn-primary">submit</button>
 			</form>
 		</div>
 	</div>
 </div>
-
+<a href="{% url 'dashboard' %}">Back</a>
 {% endblock body %}

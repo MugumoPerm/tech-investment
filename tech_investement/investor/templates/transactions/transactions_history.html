@@ -1,0 +1,15 @@
+<!-- //myapp/templates/show.html -->
+{% extends "base.html" %}
+  
+{% block title %}Transactions History{% endblock title %}
+
+{% block heading %}Transactions History{% endblock heading %}
+  
+{% block content %}
+ <div class="col-md-12">
+	 <span><a hx-get="{% url "deposit_completed" %}" hx-target="#history" class="btn btn-primary">Deposited</a></span>
+        <span><a hx-get="{% url "withdraw_completed" %}" hx-target="#history" class="btn btn-primary">Withdrawals</a></span>
+		<div id="history" ></div>
+        
+    </div>
+{% endblock content %}

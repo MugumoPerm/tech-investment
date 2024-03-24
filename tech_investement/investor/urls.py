@@ -4,13 +4,21 @@ from django.urls import path
 from django.contrib.auth import views as auth_views
 from . import views
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 urlpatterns = [
     #users
     path('', views.landing_page, name='landing_page'),
+    path('deposit/', views.transactions_id, name='transactions_id'),
     path('user_profile/', views.user_profile, name='user_profile'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('users/', views.users, name='users'),
     path('recommended_users/', views.recommended_users, name='recommended_users'),
+    path('all_users/', views.all_users, name='all_users'),
+    path('delete/<int:id>', views.destroy, name='destroy'),
+    path('delete_transaction/<int:id>', views.destroy_transaction, name='destroy_transaction'),
+    path('destroy_deposit/<int:id>', views.destroy_deposit, name='destroy_deposit'),
 
     #authentications
     path('auth/login', views.login_view, name='login'),
@@ -22,16 +30,37 @@ urlpatterns = [
     path('auth/reset_done/', auth_views.PasswordResetDoneView.as_view(), name='reset_done'),
     path('auth/logout/', views.logout_view, name='logout'),
     
-    #transactions
+    # ******************************************
+    # ***************transactions***************
+    # ******************************************
+
     path('transactions/id', views.transactions_id, name='transactions_id'),
     path('transactions_history/', views.transactions_history, name='transactions_history'),
-    path('transactions_pending/', views.transactions_pending, name='transactions_pending'),
     path('transactions_completed/', views.transactions_completed, name='transactions_completed'),
-    path('staff/admin/auth/deposit', views.deposit, name='deposit'),
-    path('withdraw/', views.withdraw, name='withdraw'),
-    
+    path('staff/admin/auth/workplace', views.admin_workplace, name='workplace'),
+    path('staff/admin/auth/amount', views.deposit, name='deposit'),
+    path('withdraw/', views.withdraw_request, name='withdraw'),
+    path('withdraw_status/', views.withdraw_status, name='withdraw_status'),
+    path('make_deposit/<int:id>', views.make_deposit, name='make_deposit'),
+    path('deposited_amount/', views.deposited_amount, name='deposited_amount'),
+    path('make_withdraw/<int:id>', views.make_withdraw, name='make_withdraw'),
+    path('destroy_withdraw/<int:id>', views.destroy_withdraw, name='destroy_withdraw'),
+    path('amount_withdrawn/', views.amount_withdrawn, name='amount_withdrawn'),
+
+    # Ajax
+    path('withdraw_status/completed/', views.withdraw_status_completed, name='withdraw_status_completed'),
+    path('withdraw_status/pending/', views.withdraw_status_pending, name='withdraw_status_pending'),
+    path('withdraw_completed/', views.withdraw_completed, name='withdraw_completed'),
+    path('deposit_completed/', views.deposit_completed, name='deposit_completed'),
+    # ############################################
+    # ################transactions################
+    # ############################################
+
+
     #assets
     path('assets/', views.assets, name='assets'),
+    path('purchase/<int:item_id>/', views.purchase_item, name='purchase_item'),
+    path('purchase/success/', views.purchase_success, name='purchase_success'),
 
     #admin
     
@@ -44,5 +73,19 @@ urlpatterns = [
     #charts(ajax)
     path('get_chart_data/', views.get_chart_data, name='get_chart_data'),
     path('get_transaction/', views.get_transaction, name='get_transaction'),
-    ]
+    
+    # refresh customers
+    path('customers/', views.customers, name='customers'),
 
+    # refresh deposited
+    path('deposited/', views.deposited, name='deposited'),
+
+    # refresh withdrawn
+    # path('withdrawn/', views.withdrawn, name='withdrawn'),
+    
+    # refresh_balance
+    path('refresh_balance/', views.refresh_balance, name='refresh_balance'),
+   ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

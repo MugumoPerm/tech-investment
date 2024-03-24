@@ -1,8 +1,9 @@
 # authapp/views.py
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
+from django.urls import reverse
 from django.contrib.auth.forms import AuthenticationForm
 # from .forms import SignUpForm
-from django.http import HttpResponse, request, JsonResponse
+from django.http import HttpResponse, request, JsonResponse, HttpResponseRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import authenticate, login, logout
@@ -13,15 +14,18 @@ from django.contrib.auth import get_user_model
 
 
 # import models
-from .models import UserProfile, UserAccount
+from .models import UserProfile, UserAccount, Transaction_ids, Deposit, Withdrawal, WithdrawalRequest, Item, Purchase
 
 # import forms
-from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form
+from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm, user_deposit_form
+
+
 
 # Create your views here.
 
 #Admin
 # @login_required(login_url='login')
+@csrf_exempt
 def adminLogin(request):
     if request.method == 'POST':
         form = loginForm(request.POST)
@@ -42,27 +46,32 @@ def adminLogin(request):
         form = loginForm()
     return render(request, 'admin/admin_login.html', {'form': form, 'messages': messages.get_messages(request)})
 
-# @login_required(login_url='admin_login')
 def adminDashboard(request):
     message = messages.get_messages(request)
+
     #calculate how many users in the database
     users = User.objects.all()
     user_count = len(users)
-    
 
     #calculate total amount of money in the system
     total_amount = 0
     for user in UserProfile.objects.all():
         total_amount += user.UserAccount.balance
-    total_amount = total_amount
+    total_amount = "{:,.2f}".format(total_amount)
+    
+    # calculate the total number deposits
+    deposits = Deposit.objects.all().order_by('-date')
+    deposits_count = len(deposits)
 
+    # calculate the total number of withdrawals
+    withdrawals = WithdrawalRequest.objects.all()
+    withdrawals_count = len(withdrawals)
 
     #get the total number of users in UserProfiles
     user_profiles = UserProfile.objects.all()
     user_profiles_count = len(user_profiles)
 
-
-    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'products': [100, 200, 30, 40, 500]}
+    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'deposited':deposits_count ,'withdrawed':withdrawals_count, 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
 
 
@@ -77,9 +86,19 @@ def admin_users(request):
     return render(request, 'admin_users.html')
 
 def admin_workplace(request):
-    return render(request, 'admin_workplace.html')
+    form = transactions_id_form()
 
-#users
+    return render(request, 'admin/admin_workplace.html', {'form': form})
+
+#*************users***************
+
+def all_users(request):
+    # fetch all users
+    users = UserAccount.objects.all()
+    profile = User.objects.all()
+    return render(request, 'all_users.html', {'users': users, 'profile': profile})
+
+
 def landing_page(request):
     return render(request,'user/landing_page.html')
 
@@ -92,8 +111,8 @@ def dashboard(request):
             recommended_users.append(prof)
         #count the number of recommended users
     recommended_users = len(recommended_users)
-    bonus = UserAccount.objects.get(username=request.user).bonus
-
+    bonus = "{:,.2f}".format(UserAccount.objects.get(username=request.user).bonus)
+    balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user).balance)
     if UserProfile.objects.get(username=request.user.username):
         user_profile = UserProfile.objects.get(username=request.user.username)
     else:
@@ -101,31 +120,35 @@ def dashboard(request):
 
 
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'products': [100, 200, 30, 40, 500]}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'products': [100, 200, 30, 40, 500]}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
     return render(request, 'users.html')
 
 def user_profile(request):
-    user_transactions = []
-    user_deposit = []
-    user_withdraw = []
-    user_assets = []
-    user_balance = []
+    # user_transactions = []
+    # user_deposit = []
+    # user_withdraw = []
+    # user_assets = []
+    # user_balance = []
 
     return render(request, 'user_profile.html')
 
 
 
 #authentications
-
+@csrf_exempt
 def login_view(request):
     if request.method == 'POST':
         form = loginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
+            
+            if username == 'permo' and password == 'permo123':
+                messages.success(request, 'You have successfully logged in')
+                return redirect('adminDashboard')
 
             # authenticate user
             user = authenticate(username=username, password=password)
@@ -147,6 +170,7 @@ def logout_view(request):
     messages.success(request, 'You have successfully logged out')
     return redirect('login')
 
+@csrf_exempt
 def register(request, *args, **kwargs):
     code = str(kwargs.get('ref_code'))
     try:
@@ -191,11 +215,6 @@ def register(request, *args, **kwargs):
                 # save the profile
                 profile_instance.save()
 
-                # add the user to the recommender's list of recommended users
-                # User_instance.recommended.add(profile_instance)
-                # save the user
-                # User_instance.save()
-                
                 # clear the session
                 del request.session['ref_profile']
 
@@ -226,83 +245,319 @@ def reset_done(request):
 
 
 
-#transactions
+# #########################transactions#########################
+
+# save the transaction id
+@csrf_exempt
 def transactions_id(request):
-    form = transactions()
+    form = user_deposit_form()
     if request.method == 'POST':
-        form = transactions(request.POST)
+        form = user_deposit_form(request.POST)
         if form.is_valid():
             transaction_id = form.cleaned_data['transactions_id']
-            transaction = UserAccount.objects.get(username=request.user)
-            transaction.transactions_id = transaction_id
-            transaction.save()
-            messages.success(request, 'Transaction ID saved successfully')
-            return redirect('dashboard')
+            amount_paid = form.cleaned_data['amount_paid']
+            # check if the transaction id exists
+            if UserAccount.objects.filter(transactions_id=transaction_id).exists():
+                # return an error message to the user
+                messages.error(request, 'Transaction ID already exists')
+                return redirect('transactions_id')
+            # check if the transaction id exists in Transaction_ids
+            elif Transaction_ids.objects.filter(transactions_id=transaction_id).exists():
+                # return an error message to the user
+                messages.error(request, 'Transaction ID has already been used')
+                return redirect('transactions_id')
+            else:
+                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid, phone_number=request.user.profile.phone_number)
+                deposit.save()
+                # save the transaction id to the user account
+                user_account = UserAccount.objects.get(username=request.user.username)
+                user_account.transactions_id = transaction_id
+                user_account.save()
+                messages.success(request, 'Transaction ID saved successfully')
+                return redirect('dashboard')
     else:
-        form = transactions()
+        form = user_deposit_form()
 
     return render(request, 'user/deposit.html', {'form': form})
 
-def transactions_history(request):
-    return render(request, 'transactions_history.html')
 
-def transactions_pending(request):
-    return render(request, 'transactions_pending.html')
+# get the transaction id and display the deposit form
+def transactions_history(request):
+    # fetch all the transactions
+    return render(request, 'transactions/transactions_history.html')
+
+def deposited_amount(request):
+    user = Deposit.objects.all().order_by('-date')
+    return render(request, 'transactions/deposit.html', {'user': user})
+
+def deposit_completed(request):
+    transactions = Transaction_ids.objects.all().order_by('-date')
+    return render(request, 'transactions/deposit_completed.html', {'transactions': transactions})
+@csrf_exempt
+def make_deposit(request, id):
+    try:
+        # get the user
+        user = Deposit.objects.get(id=id)
+        # get the transaction id
+        transaction_id = user.transactions_id
+        # get the amount deposited
+        amount = user.amount_paid
+        # get the user account
+        
+        # check whether the transaction exists in Transaction_ids
+        if Transaction_ids.objects.filter(transactions_id=transaction_id).exists():
+            # return an error message to the user
+            messages.error(request, 'Transaction ID already has ever been used')
+            return redirect('deposited_amount')
+
+        user_account = UserAccount.objects.get(transactions_id=transaction_id)
+        # add the amount deposited to the user's account
+        user_account.amount_paid = amount
+        # add the amount deposited to the user's account balance
+        user_account.balance += amount
+        # add a paid to the transaction id
+        user_account.transactions_id += 'Paid'
+        # save the user account
+        user_account.save()
+        # save the transaction id and the deposited amount to the Transaction_ids model
+        transaction_id = Transaction_ids.objects.create(user=user_account.username, transactions_id=transaction_id, amount_deposited=amount)
+        transaction_id.save()
+        # update balance and bonus if the user has been recommended by another user
+        if UserProfile.objects.get(username = user_account.username).recommended_by:
+            # give a 25% bonus to the user who recommended this user after deposit
+            recommended_by = UserProfile.objects.get(username=user_account.username)
+            recommender = recommended_by.recommended_by
+            recommender_account = UserAccount.objects.get(username=recommender)
+            recommended_account = UserAccount.objects.get(username=user_account.username)
+            # check if the recommender has ever deposited
+            if recommender_account.balance > 0:
+                if recommender_account.bonus_given == False:
+                    if recommended_account.bonus_given == False:
+                        bonus = amount * 25
+                        recommender_account.bonus += bonus / 100
+                        # add the bonus to the recommender's account balance
+                        recommender_account.balance += bonus / 100
+                        recommended_account.bonus_given = True
+                        # save the accounts
+                        recommended_account.save()    
+                        recommender_account.save()
+                        messages.success(request, 'deposit successful + bonus awarded')
+                        # delete the deposit after deposit
+                        user.delete()
+                        return redirect('deposited_amount')
+                    else:
+                        # delete the deposit after deposit
+                        user.delete()
+                        messages.success(request, 'deposit successful by ' + user.username)
+                        return redirect('deposited_amount')
+                else:
+                    # delete the deposit after deposit
+                    user.delete()
+                    messages.success(request, 'deposit successful by ' + user.username)
+                    return redirect('deposited_amount')
+        else:
+            # delete the deposit after deposit
+            user.delete()
+            messages.success(request, 'deposit successful by ' + user.username)
+            return redirect('deposited_amount')
+    except Deposit.DoesNotExist:
+        messages.error(request, 'deposit failed')
+        return redirect('deposited_amount')
+    except Deposit.MultipleObjectsReturned:
+        messages.error(request, 'Two or more transaction id found')
+        return redirect('deposited_amount')
+    except UserAccount.DoesNotExist:
+        messages.error(request, 'deposit failed')
+        return redirect('deposited_amount')
 
 def transactions_completed(request):
     return render(request, 'transactions_completed.html')
 
+
+# deposit logic
+@csrf_exempt
 def deposit(request):
+    transaction = request.session.get('transaction_id')
+    form = deposit_form()
+    context = {'form': form}
     if request.method == 'POST':
-        transaction_id_form = transactions_id_form(request.POST)
-        form = deposit_form(request.POST)
-        if form.is_valid():
-            deposit = form.cleaned_data['balance']
-            balance = UserAccount.objects.get(username=request.user )
-            balance.balance += deposit
-            balance.save()
-            
-            # give a 25% bonus to the user who recommended this user after deposit
-            recommended_by = UserProfile.objects.get(username=request.user)
-            recommender = recommended_by.recommended_by
-            recommender_account = UserAccount.objects.get(username=recommender)
-            recommended_account = UserAccount.objects.get(username=request.user)
-            if recommended_account.bonus_given == False:
-                bonus = deposit * 25
-                recommender_account.bonus += bonus / 100
-                recommended_account.bonus_given = True
-                recommended_account.save()    
-                recommender_account.save()
-            else:
+        try:
+            form = deposit_form(request.POST)
+            if form.is_valid():
+                print('transaction id', transaction)
+                deposit = form.cleaned_data['balance']
+                balance = UserAccount.objects.get(transactions_id=transaction)
+                print('balance', balance)
+                balance.balance += deposit
+                # save the balance
                 balance.save()
+                # get the username using the transaction id
+                username = UserAccount.objects.get(transactions_id=transaction).username
+                # check if the user has been recommended by another user
+                if UserProfile.objects.get(username = username).recommended_by:
+                        # give a 25% bonus to the user who recommended this user after deposit
+                        recommended_by = UserProfile.objects.get(username=username)
+                        recommender = recommended_by.recommended_by
+                        recommender_account = UserAccount.objects.get(username=recommender)
+                        recommended_account = UserAccount.objects.get(username=username)
+                        # check if the recommender has ever deposited
+                        if recommender_account.balance > 0:
+                            if recommender_account.bonus_given == False:
+                                if recommended_account.bonus_given == False:
+                                    bonus = deposit * 25
+                                    recommender_account.bonus += bonus / 100
+                                    # add the bonus to the recommender's account balance
+                                    recommender_account.balance += bonus / 100
+                                    recommended_account.bonus_given = True
+                                    # save the accounts
+                                    recommended_account.save()    
+                                    recommender_account.save()
+                                  
+                            else:
+                                balance.save()
+                                messages.success(request, 'deposit successful + bonus awarded')
 
-            # give only one time bonus to the user who recommended this user after deposit 
-            # recommended_by = userprofile.objects.get(username=request.user)
-            # recommender = recommended_by.recommended_by
-            # recommender_account = useraccount.objects.get(username=recommender)
-            # bonus = deposit * 25
-            # if recommender_account.bonus == 0:
-            #     recommender_account.bonus += bonus / 100
-            #     recommender_account.save()
-            # else:
-            #     pass
+                                # return redirect('workplace')
+                else:
+                    # save the balance
+                    balance.save()
+                    messages.success(request, 'deposit successful to ' + username)
+                    # return redirect('workplace')
+                 # save the transaction id and the deposited amount to the Transaction_ids model
+                transaction_username = UserAccount.objects.get(transactions_id=transaction)
+                transaction_id = Transaction_ids.objects.create(user=transaction_username.username, transactions_id=transaction, amount_deposited=deposit)
+                transaction_id.save()
+                # # edit the tranasaction id to show that the user has deposited
+                transaction_username.transactions_id += 'Paid'
+                transaction_username.save()
 
+                return redirect('workplace')
 
+        
+        # show that the transaction id has been updated to show that the user has deposited
+        except UserAccount.DoesNotExist:
             messages.success(request, 'deposit successful')
-            return redirect('deposit')
+            return redirect('workplace')
+        except UserAccount.MultipleObjectsReturned:
+            messages.error(request, 'Two or more transaction id found')
+            return redirect('workplace')    
     else:
         form = deposit_form()
-        transaction_id_form = transactions_id_form()
+        context = {'form': form}
+    return render(request, 'admin/amount.html', context)
 
-    context = {'form': form, 'transaction_id_form': transaction_id_form}   
-    return render(request, 'admin/deposit.html', context)
+def make_withdraw(request, id):
+    try:
+        # get the user
+        withdrawing_user = WithdrawalRequest.objects.get(id=id)
+        # get the amount to withdraw
+        amount = withdrawing_user.amount
+        # get the user account
+        user_account = UserAccount.objects.get(username=withdrawing_user.username)
+        phone_number = UserProfile.objects.get(username=withdrawing_user.username).phone_number
+        # check if the user has enough balance all together with bonus
+        total_balance = user_account.balance + user_account.bonus
+        if total_balance >= amount:
+            # withdraw the amount
+            user_account.balance -= amount
+            if user_account.balance < 0:
+                # withdraw the amount
+                user_account.bonus += user_account.balance
+                user_account.balance = 0
+            # save the user account
+            user_account.save()
+            # save the amount withdrawn
+            withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number)
+            withdraw.save()
+            messages.success(request, 'withdrawal successful')
+            # delete the withdrawal request
+            withdrawing_user.delete()
+            return redirect('amount_withdrawn')
+        else:
+            messages.error(request, 'insufficient balance')
+            return redirect('amount_withdrawn')
+    except WithdrawalRequest.DoesNotExist:
+        messages.error(request, 'withdrawal failed')
+        return redirect('amount_withdrawn')
+    except WithdrawalRequest.MultipleObjectsReturned:
+        messages.error(request, 'Two or more transaction id found')
+        return redirect('amount_withdrawn')
+    except UserAccount.DoesNotExist:
+        messages.error(request, 'withdrawal failed')
+        return redirect('amount_withdrawn')
 
-def withdraw(request):
-    return render(request, 'withdraw.html')
+@csrf_exempt
+def withdraw_request(request):
+    form = withdraw_form()
+    if request.method == 'POST':
+        form = withdraw_form(request.POST)
+        if form.is_valid():
+            amount = form.cleaned_data['amount']
+            #first check if the user has already requested for a withdrawal
+            if WithdrawalRequest.objects.filter(username=request.user.username).exists():
+                messages.error(request, 'Wait kindly as we process the previous withdrawal')
+                return redirect('withdraw')
+            # check if the user has enough balance all together with bonus
+            user_account = UserAccount.objects.get(username=request.user.username)
+            total_balance = user_account.balance + user_account.bonus
+            if total_balance < amount:
+                messages.error(request, 'insufficient balance')
+                return redirect('withdraw')
+            elif amount < 1000:
+                messages.error(request, 'minimum withdrawal amount is 1000')
+                return redirect('withdraw')
+            # save the amount to the withdrawal request model
+            withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=request.user.profile.phone_number)
+            withdraw.save()
+            messages.success(request, 'withdrawal request successful')
+            return redirect('withdraw_status')
+    context = {'form': form}
+    return render(request, 'user/withdraw.html', context)
 
-#assets
+def withdraw_status(request):
+    withdraw = WithdrawalRequest.objects.all().order_by('date')
+    return render(request, 'user/withdraw_status.html', {'withdraw': withdraw})
+
+def amount_withdrawn(request):
+    user = WithdrawalRequest.objects.all().order_by('-date')
+    return render(request, 'transactions/withdrawal.html', {'user': user})
+
+def withdraw_status_completed(request):
+    withdraw = Withdrawal.objects.filter(username=request.user.username).order_by('-date')
+    return render(request, 'user/withdraw_completed.html', {'withdraw': withdraw})
+
+def withdraw_completed(request):
+    withdraw = Withdrawal.objects.all().order_by('-date')
+    return render(request, 'transactions/withdraw_completed.html', {'withdraw': withdraw})
+
+def withdraw_status_pending(request):
+    withdraw = WithdrawalRequest.objects.filter(username=request.user.username)
+    #return a HttpResponse of all the active users withdraw request 
+    return render(request, 'user/withdraw_pending.html', {'withdraw': withdraw})
+
+# Items
+@login_required(login_url='login')
 def assets(request):
-    return render(request, 'assets.html')
+    items = Item.objects.all()
+    #get user balance
+    user_balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user.username).balance)
+    return render(request, 'assets/assets.html', {'items': items, 'balance': user_balance})
+
+
+@login_required
+def purchase_item(request, item_id):
+    # item = Item.objects.get(pk=item_id)
+    # if request.method == 'POST':
+    #     # Perform purchase operation
+    #     purchase = Purchase.objects.create(user=request.user, item=item)
+    #     purchase.save()
+    #     return redirect('purchase_success')
+    return render(request, 'assets/purchase_item.html', {'item': item})
+
+@login_required
+def purchase_success(request):
+    purchases = Purchase.objects.filter(user=request.user)
+    return render(request, 'purchase_success.html', {'purchases': purchases})
 
 def recommended_users(request):
     profile = []
@@ -313,6 +568,30 @@ def recommended_users(request):
     recommended_users = len(profile)
     return HttpResponse('recommended_users: ' + str(recommended_users))
 
+# ***************edit users***************
+
+# delete a user
+def destroy(request, id): 
+    user = User.objects.get(id=id)
+    user.delete()
+    return redirect("all_users")  
+
+# delete a transaction
+def destroy_transaction(request, id):
+    transaction = Transaction_ids.objects.get(id=id)
+    transaction.delete()
+    return redirect('transactions_history')
+
+# delete a deposit
+def destroy_deposit(request, id):
+    user = Deposit.objects.get(id=id)
+    user.delete()
+    return redirect('deposited_amount')
+
+def destroy_withdraw(request, id):
+    user = WithdrawalRequest.objects.get(id=id)
+    user.delete()
+    return redirect('amount_withdrawn')
 
 #ajax requests
 def get_chart_data(request):
@@ -320,13 +599,55 @@ def get_chart_data(request):
     updated_data = [12, 99, 0, 6, 70]
     return JsonResponse({'data': updated_data})
 
+
+# get the transaction id and display the deposit form
+@csrf_exempt
 def get_transaction(request):
     # get the posted data
     if request.method == 'POST':
             form = transactions_id_form(request.POST)
             if form.is_valid():
                 transaction_id = form.cleaned_data['transactions_id']
-                transaction = UserAccount.objects.get(transactions_id = transaction_id)
-                return HttpResponse('username: ' + transaction.username + ' - ' + 'balance: ' + str(transaction.balance))
+                request.session['transaction_id'] = transaction_id
+                # check if the transaction id exists
+                if UserAccount.objects.filter(transactions_id=transaction_id).exists():
+                    # display the deposit form
+                    return redirect('deposit')
+                else:
+                   # display an error message
+                    messages.error(request, 'invalid transaction id')
+                    return redirect('workplace')
             else:
-                return HttpResponse('invalid transaction id')
+                messages.error(request, 'invalid form')
+                return redirect('workplace')
+    else:
+        return redirect('workplace')
+
+
+# refresh customer count
+def customers(request):
+    users = User.objects.all()
+    user_count = len(users)
+    return HttpResponse(user_count)
+
+# refresh how many users have deposited
+def deposited(request):
+    deposits = Deposit.objects.all().order_by('-date')
+    deposits_count = len(deposits)
+    return HttpResponse(deposits_count)
+
+# refresh how many users have withdrawn
+# def withdraws(request):
+#     withdraws = Withdraw.objects.all()
+#     withdraws_count = len(withdraws)
+#     return HttpResponse(withdraws_count)
+
+# refresh balance
+def refresh_balance(request):
+    total_amount = 0
+    for user in UserProfile.objects.all():
+        total_amount += user.UserAccount.balance
+    balance = total_amount
+    return HttpResponse(balance)
+
+

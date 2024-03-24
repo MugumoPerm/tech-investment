@@ -26,14 +26,40 @@
 	<p>recommended users: {{recommended_users}} </p>
 
 
+	{% if user %}
 
-<p>User: {{user}}</p>
+	<p>User: {{user}}</p>
+	
+	{% else %}
+
+		<p>user: (null)</p>
+	
+	{% endif %}
+
+{% if referral_bonus %}
+
+<p>Referral bonus: {{ referral_bonus }}</p>
+	
+{% else %}
 
 <p>Referral bonus: {{referral_bonus}}</p>
+	
+{% endif %}
+
 
 {% if user_profile %}
 
-	<p>	balance:{{user_profile.UserAccount.balance}}</p><br>
+<p> balance:	{{balance}}</p><br>
+
+<p>Referral link:</p>
+
+<p> 
+
+<span id="referralLink" >http://192.168.16.107:2022/auth/register/{{user_profile.code}}</span>
+
+<span style="cursor:pointer;" onclick="copyText()" class="material-icons-outlined">copy</span><br>
+
+</p>
 
 {% else %}
 	
@@ -41,10 +67,38 @@
 
 {% endif %}
 
-<a href="{% url "transactions_id" %}" ><span style="color: green;" class="material-icons-outlined">arrow_circle_down</span></a>
 
+<a href="{% url "transactions_id" %}" >
+	<span style="color: green;" class="material-icons-outlined">add</span>
+</a>
 
-		  <a href="{% url "logout" %}" ><span style="color: red;" class="material-icons-outlined">logout</span></a>
+<a href="{% url "logout" %}" >
+	<span style="color: red;" class="material-icons-outlined">logout</span>
+</a>
+
+<a href="{% url "withdraw" %}" >
+	<span style="color: green;" class="material-icons-outlined">account_balance_wallet</span>
+</a>
+
+<a href="{% url "assets" %}" >
+	<span style="color: green;" class="material-icons-outlined">inventory_2</span>
+</a>
+
+{% block script %}
+<script>
+function copyText() {
+  var copyText = document.getElementById("referralLink");
+  var textArea = document.createElement("textarea");
+  textArea.value = copyText.textContent;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textArea);
+  alert("Copied the text: " + copyText.textContent);
+}
+</script>
+<script src="{% static 'js/counter.js' %}"></script>
+{% endblock script %}
 
 {% endblock body %}
 

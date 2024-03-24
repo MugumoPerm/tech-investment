@@ -1,0 +1,36 @@
+{% extends 'cards.html' %}
+
+
+
+{% block header %}
+
+Purchase Assets
+
+{% endblock header %}
+
+{% block balance %}
+
+balance: {{ balance }}
+
+{% endblock balance %}
+
+
+{% block card %}
+
+{% for asset in items %}
+
+
+	<section class="card {{ asset.title }}">
+            <div class="icon">
+				<img src="{{ asset.image.url }}" alt="{{ asset.name }}">
+            </div>
+			<h3>{{ asset.name }}</h3>
+			<span>{{ asset.description }}..</span>
+			<span>Cost: {{ asset.price }}</span>
+			<span>Profit: {{ asset.release_amount }}</span>
+            <button>Purchase</button>
+	</section>
+
+{% endfor %}
+
+{% endblock %}
