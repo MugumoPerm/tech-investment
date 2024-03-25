@@ -15,9 +15,13 @@
 	<h1>Withdraw</h1>
 	<form action="{% url 'withdraw' %}" method="post">
 		{% csrf_token %}
-		<label for="amount">Amount</label>
-		{% render_field form.amount class="form-control" %}
+		<label for="amount">Amount</label><br>
+		{% render_field form.amount class="form-control" %}<br>
+		<label for="phone_number">Phone Number</label><br>
+		{% render_field form.phone_number class="form-control" %}
 		<br>
+		<label for="confirmation_name">Confirmation Name</label><br>
+		{% render_field form.confirmation_name class="form-control" %}<br>
 		<input type="submit" value="Withdraw">
 	</form>
 <button onclick="location.href='{% url 'dashboard' %}'">Back</button>

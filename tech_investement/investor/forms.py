@@ -43,12 +43,12 @@ class reset_passwordForm(forms.Form):
 class transactions_id_form(forms.ModelForm):
     class Meta:
         model = UserAccount
-        fields = ['transactions_id',]
+        fields = ['transactions_id']
 
 class user_deposit_form(forms.ModelForm):
     class Meta:
         model = Deposit
-        fields = ['transactions_id', 'amount_paid',]
+        fields = ['transactions_id', 'amount_paid','name']
 
 class deposit_form(forms.ModelForm):
     class Meta:
@@ -58,7 +58,7 @@ class deposit_form(forms.ModelForm):
 class withdraw_form(forms.ModelForm):
     class Meta:
         model = WithdrawalRequest
-        fields = ['amount']
+        fields = ['amount', 'phone_number', 'confirmation_name']
 
 # search form
 class searchForm(forms.Form):

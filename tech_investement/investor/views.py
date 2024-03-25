@@ -256,6 +256,7 @@ def transactions_id(request):
         if form.is_valid():
             transaction_id = form.cleaned_data['transactions_id']
             amount_paid = form.cleaned_data['amount_paid']
+            name = form.cleaned_data['name']
             # check if the transaction id exists
             if UserAccount.objects.filter(transactions_id=transaction_id).exists():
                 # return an error message to the user
@@ -267,7 +268,7 @@ def transactions_id(request):
                 messages.error(request, 'Transaction ID has already been used')
                 return redirect('transactions_id')
             else:
-                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid, phone_number=request.user.profile.phone_number)
+                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid, phone_number=request.user.profile.phone_number, name=name)
                 deposit.save()
                 # save the transaction id to the user account
                 user_account = UserAccount.objects.get(username=request.user.username)
@@ -493,6 +494,8 @@ def withdraw_request(request):
         form = withdraw_form(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
+            phone_number = form.cleaned_data['phone_number']
+            confirmation_name = form.cleaned_data['confirmation_name']
             #first check if the user has already requested for a withdrawal
             if WithdrawalRequest.objects.filter(username=request.user.username).exists():
                 messages.error(request, 'Wait kindly as we process the previous withdrawal')
@@ -507,7 +510,7 @@ def withdraw_request(request):
                 messages.error(request, 'minimum withdrawal amount is 1000')
                 return redirect('withdraw')
             # save the amount to the withdrawal request model
-            withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=request.user.profile.phone_number)
+            withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=phone_number, confirmation_name=confirmation_name)
             withdraw.save()
             messages.success(request, 'withdrawal request successful')
             return redirect('withdraw_status')

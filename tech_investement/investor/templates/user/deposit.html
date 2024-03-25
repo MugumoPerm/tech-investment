@@ -45,13 +45,15 @@ Deposit
 
 </p>
 
-					<label for="amount">Payment Transaction ID</label>
+					<label for="amount">Payment Transaction ID</label><br>
 					{% render_field form.transactions_id class='form-control' placeholder='Transaction id' %}
-					<!-- <input type="text" class="form-control" id="amount" name="amount" required> -->
 					<br>
-					<br>
-					<label for="amount">Amount Paid</label>
+					<label for="amount">Confirmation Name</label><br>
+					{% render_field form.name class='form-control' placeholder='confirmation name' %}
+<br>
+<label for="amount">Amount Paid</label><br>
 					{% render_field form.amount_paid class='form-control' placeholder='Amount' %}
+<br>
 				</div>
 				<button type="submit" class="btn btn-primary">submit</button>
 			</form>

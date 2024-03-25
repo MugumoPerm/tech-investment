@@ -98,6 +98,7 @@ class Transaction_ids(models.Model):
 # # deposits
 class Deposit(models.Model):
     username = models.CharField(max_length=12, null=False, blank=False)
+    name = models.CharField(max_length=12, null=False, blank=False)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     phone_number = models.IntegerField(null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
@@ -120,6 +121,7 @@ class WithdrawalRequest(models.Model):
     username = models.CharField(max_length=12, null=False, blank=False)
     phone_number = models.IntegerField(null=False, blank=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    confirmation_name = models.CharField(max_length=12, null=False, blank=False)
     status = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):

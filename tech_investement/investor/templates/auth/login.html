@@ -28,7 +28,10 @@
 							<div class="text w-100">	
 								<h2>Welcome to login</h2>
 									<p>Don't have an account?</p>
-									<a class="btn btn-white btn-outline-white" hx-get="{% url 'register' %}" hx-target="#authForms" hx-swap="innerHTML" hx-push-url="true">sign up</a>
+									<a id="signInButton" class="btn btn-white btn-outline-white" hx-get="{% url 'register' %}" hx-target="#authForms" hx-swap="innerHTML" hx-push-url="true">sign up
+
+								<img style="width: 25px; margin: -33px; position: absolute;"  class="htmx-indicator" src="{% static "images/puff.svg" %}">
+									</a>
 								</div>
 					  </div>
 						<div class="login-wrap p-4 p-lg-5">

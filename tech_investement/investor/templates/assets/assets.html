@@ -13,9 +13,10 @@ Purchase Assets
 
 balance: {{ balance }} <br>
 
+
 {% for message in messages %}
 				{% if "error" in message.tags %}
-					<span id='message' style="color: red; font-weight: 400; ">{{ message }}  </span>
+					<span id='message' style="color: red; font-weight: 300; ">{{ message }}  </span>
 					{% endif %}<a href="/transactions/id" ">Deposit</a>
 {% endfor %}
 
