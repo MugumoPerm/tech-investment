@@ -10,13 +10,19 @@ Purchase Assets
 
 {% block balance %}
 
-balance: {{ balance }}
+
+balance: {{ balance }} <br>
+
+{% for message in messages %}
+				{% if "error" in message.tags %}
+					<span id='message' style="color: red; font-weight: 400; ">{{ message }}  </span>
+					{% endif %}<a href="/transactions/id" ">Deposit</a>
+{% endfor %}
 
 {% endblock balance %}
 
 
 {% block card %}
-
 {% for asset in items %}
 
 
@@ -28,9 +34,12 @@ balance: {{ balance }}
 			<span>{{ asset.description }}..</span>
 			<span>Cost: {{ asset.price }}</span>
 			<span>Profit: {{ asset.release_amount }}</span>
-            <button>Purchase</button>
+			<a href="/purchase/{{ asset.id }}" ><button> Purchase</button></a>
 	</section>
 
 {% endfor %}
 
 {% endblock %}
+
+</div>
+

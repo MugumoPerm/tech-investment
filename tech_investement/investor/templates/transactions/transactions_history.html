@@ -7,8 +7,8 @@
   
 {% block content %}
  <div class="col-md-12">
-	 <span><a hx-get="{% url "deposit_completed" %}" hx-target="#history" class="btn btn-primary">Deposited</a></span>
-        <span><a hx-get="{% url "withdraw_completed" %}" hx-target="#history" class="btn btn-primary">Withdrawals</a></span>
+	 <span><a hx-get="{% url "deposit_completed" %}" hx-target="#history" hx-push-url="false" class="btn btn-primary">Deposited</a></span>
+        <span><a hx-get="{% url "withdraw_completed" %}" hx-target="#history" hx-push-url="false" class="btn btn-primary">Withdrawals</a></span>
 		<div id="history" ></div>
         
     </div>

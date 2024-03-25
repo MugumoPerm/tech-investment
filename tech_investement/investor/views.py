@@ -544,21 +544,33 @@ def assets(request):
     return render(request, 'assets/assets.html', {'items': items, 'balance': user_balance})
 
 
-@login_required
-def purchase_item(request, item_id):
-    # item = Item.objects.get(pk=item_id)
-    # if request.method == 'POST':
-    #     # Perform purchase operation
-    #     purchase = Purchase.objects.create(user=request.user, item=item)
-    #     purchase.save()
-    #     return redirect('purchase_success')
-    return render(request, 'assets/purchase_item.html', {'item': item})
+def purchase_item(request, id):
+    items = Item.objects.get(pk=id)
+    user = UserAccount.objects.get(username=request.user)
+    user_profile = UserProfile.objects.get(username=request.user)
+    if user.balance >= items.price:
+        # deduct the amount from the user account
+        user.balance -= items.price
+        user.save()
+        # save the purchase
+        purchase = Purchase(user=user_profile, item=items)
+        purchase.save()
+        messages.success(request, 'purchased successful')
+        return redirect('purchase_success',id=id)
+    else:
+        messages.error(request, 'insufficient balance')
+        return redirect('assets')
+    
+def purchase_success(request, id):
+    items = Item.objects.filter(pk=id)
+    balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user.username).balance)
+    return render(request, 'assets/purchase_success.html', {'items': items  , 'balance': balance})
 
-@login_required
-def purchase_success(request):
-    purchases = Purchase.objects.filter(user=request.user)
-    return render(request, 'purchase_success.html', {'purchases': purchases})
+def purchased_items(request):
+    purchases = Purchase.objects.filter(user=request.user.profile)
+    return render(request, 'assets/purchased_items.html', {'purchases': purchases})
 
+# ***************recommendation***************
 def recommended_users(request):
     profile = []
     for prof in UserProfile.objects.all():

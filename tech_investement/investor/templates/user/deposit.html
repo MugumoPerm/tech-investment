@@ -4,6 +4,14 @@
 
 {% load static %}
 
+{% block links %}
+	<!-- <link rel="stylesheet" href="{% static 'styles/login.css' %}"> -->
+	<link rel="stylesheet" href="{% static 'styles/adminDashboard.css' %}">
+
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
+{% endblock links %}
+
 {% block title %}
 
 Deposit
@@ -27,8 +35,17 @@ Deposit
 			<form method="POST" action="{% url 'transactions_id' %}">
 				{% csrf_token %}
 				<div class="form-group">
-					<label for="amount">Transaction ID</label>
-					
+					<p> 
+						<label for="amount">Copy Number </label><br>
+						<span id="referralLink" >0714025354</span>
+						<span style="cursor:pointer;" onclick="copyText()" class="material-icons-outlined">copy</span>
+						<br>
+						<label for="amount">Confirmation Name: JOHN KARANJA</label><br>
+
+
+</p>
+
+					<label for="amount">Payment Transaction ID</label>
 					{% render_field form.transactions_id class='form-control' placeholder='Transaction id' %}
 					<!-- <input type="text" class="form-control" id="amount" name="amount" required> -->
 					<br>
@@ -42,4 +59,17 @@ Deposit
 	</div>
 </div>
 <a href="{% url 'dashboard' %}">Back</a>
+<script>
+function copyText() {
+  var copyText = document.getElementById("referralLink");
+  var textArea = document.createElement("textarea");
+  textArea.value = copyText.textContent;
+  document.body.appendChild(textArea);
+  textArea.select();
+  document.execCommand("copy");
+  document.body.removeChild(textArea);
+  alert("Number Copied: " + copyText.textContent + ", You can now paste it.");
+}
+</script>
+
 {% endblock body %}
