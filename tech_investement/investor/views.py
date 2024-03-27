@@ -321,7 +321,7 @@ def make_deposit(request, id):
         # save the user account
         user_account.save()
         # save the transaction id and the deposited amount to the Transaction_ids model
-        transaction_id = Transaction_ids.objects.create(user=user_account.username, transactions_id=transaction_id, amount_deposited=amount)
+        transaction_id = Transaction_ids.objects.create(user=user_account.username, transactions_id=transaction_id, amount_deposited=amount, name=user.name)
         transaction_id.save()
         # update balance and bonus if the user has been recommended by another user
         if UserProfile.objects.get(username = user_account.username).recommended_by:
@@ -468,7 +468,7 @@ def make_withdraw(request, id):
             # save the user account
             user_account.save()
             # save the amount withdrawn
-            withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number)
+            withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number, name=withdrawing_user.confirmation_name, status=True)
             withdraw.save()
             messages.success(request, 'withdrawal successful')
             # delete the withdrawal request

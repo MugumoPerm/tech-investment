@@ -10,6 +10,8 @@ from .models import UserProfile, UserAccount, Deposit, Withdrawal, WithdrawalReq
 class CreateUserForm(UserCreationForm):
     email = forms.EmailField(required=True, max_length=254)
     username = forms.CharField(required=True, max_length=254)
+    password1 = forms.CharField(required=True, max_length=15, widget=forms.PasswordInput())
+    password2 = forms.CharField(required=True, max_length=15, widget=forms.PasswordInput())
 
     class Meta:
         model = User 
@@ -23,8 +25,8 @@ class UserProfileForm(forms.ModelForm):
 
 # login
 class loginForm(forms.Form):
-    username = forms.CharField(max_length=12)
-    password = forms.CharField(max_length=12, widget=forms.PasswordInput())
+    username = forms.CharField(max_length=15)
+    password = forms.CharField(max_length=15, widget=forms.PasswordInput())
     
     class Meta:
         fields = ["username", "password"]
