@@ -4,13 +4,23 @@
 
 {% block body %}
 
-{% if messages %}
-	{% for message in messages %}
-		<div class="alert alert-{{ message.tags }}">
-			{{ message }}, <a href="/withdraw_status/" class="close">view status</a>
-		</div>
-	{% endfor %}
-{% endif %}
+<div class="message_container" style="display: flex; justify-content: center; ">
+	{% if messages %}
+		{% for message in messages %}
+		{% if message.tags == 'success' %} 	
+			<div class="alert alert-success" role="alert">
+				{{ message }}
+			</div>
+		{% elif message.tags == 'error' %}
+			<div class="alert alert-danger" role="alert">
+				{{ message }}, <a href="/withdraw_status/" class="close">view status</a>
+
+			</div>
+		{% endif %}
+		{% endfor %}
+	{% endif %}
+</div>
+
 
 	<h1>Withdraw</h1>
 	<form action="{% url 'withdraw' %}" method="post">

@@ -16,10 +16,10 @@ balance: {{ balance }}<br>
 
 {% endblock balance %}
 
+	{% block main_card_style %} style="flex-direction: column; height: 100vh;" {% endblock main_card_style %}
 {% block card %}
 
 	{% for asset in purchases %}
-
 		<section class="card {{ asset.title }}">
 				<div class="icon">
 					<img src="{{ asset.image }}" alt="{{ asset.name }}">

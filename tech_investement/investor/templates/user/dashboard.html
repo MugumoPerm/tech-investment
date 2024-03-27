@@ -9,7 +9,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<!-- PAGE TITLE HERE -->
 	<title>Dashboard</title>
-	
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" rel="stylesheet">
 	<link href="{% static "user_dashboard/vendor/jquery-nice-select/css/nice-select.css" %}" rel="stylesheet">
 	<link rel="stylesheet" href="{% static "user_dashboard/vendor/nouislider/nouislider.min.css" %}">
 	<!-- Style css -->
@@ -132,10 +132,10 @@
 				<ul class="metismenu" id="menu">
 					<li class="dropdown header-profile">
 						<a class="nav-link" href="javascript:void(0);" role="button" data-bs-toggle="dropdown">
-							<img src="images/ion/man (1).png" width="20" alt=""/>
+							<img src="{% static "user_dashboard/images/ion/man (1).png" %}" width="20" alt=""/>
 							<div class="header-info ms-3">
-								<span class="font-w600 ">Hi,<b>AC</b></span>
-								<small class="text-end font-w400">xyz@gmail.com</small>
+								<span class="font-w600 ">Hi,<b>{{user}}😊</b></span>
+								<small class="text-end font-w400">{{user_profile.phone_number}}</small>
 							</div>
 						</a>
 						
@@ -180,9 +180,9 @@
 							<span class="nav-text">Table</span>
 						</a>
                     </li>
-                    <li><a href="javascript:void()" aria-expanded="false">
-							<i class="flaticon-022-copy"></i>
-							<span class="nav-text">Pages</span>
+                    <li><a href="{% url "logout" %}" aria-expanded="false">
+							<span style="color: red;" class="material-icons-outlined">logout</span>
+							<span class="nav-text">Logout</span>
 						</a>
                     </li>
                 </ul>
@@ -195,10 +195,26 @@
 		<!--**********************************
             Content body start
         ***********************************-->
-        <div class="content-body">
-            <!-- row -->
-			<div class="container-fluid">
-				<div class="row invoice-card-row">
+			<!-- message -->
+			<div class="content-body">
+				<!-- row -->
+<div class="message_container" style="display: flex; justify-content: center; ">
+	{% if messages %}
+		{% for message in messages %}
+		{% if message.tags == 'success' %} 	
+			<div class="alert alert-success" role="alert">
+				{{ message }}
+			</div>
+		{% elif message.tags == 'error' %}
+			<div class="alert alert-danger" role="alert">
+				{{ message }}
+			</div>
+		{% endif %}
+		{% endfor %}
+	{% endif %}
+</div>
+				<div class="container-fluid">
+					<div class="row invoice-card-row">
 					<div class="col-xl-3 col-xxl-3 col-sm-6">
 						<div class="card bg-warning invoice-card">
 							<div class="card-body d-flex">
@@ -210,7 +226,7 @@
 									
 								</div>
 								<div>
-									<h2 class="text-white invoice-num">2478</h2>
+									<h2 class="text-white invoice-num">{{recommended_users}}</h2>
 									<span class="text-white fs-18">Total Referred</span>
 								</div>
 							</div>
@@ -229,7 +245,7 @@
 									
 								</div>
 								<div>
-									<h2 class="text-white invoice-num">983</h2>
+									<h2 class="text-white invoice-num">{{ referral_bonus }}</h2>
 									<span class="text-white fs-18">Bonus recieved</span>
 								</div>
 							</div>
@@ -241,14 +257,29 @@
 								<div class="row align-items-center">
 									<div class="col-xl-6">
 										<div class="card-bx bg-blue">
-											<img class="pattern-img" src="images/pattern/pattern6.png" alt="">
+											<img class="pattern-img" src="{% static "user_dashboard/images/pattern/pattern6.png" %}" alt="">
 											<div class="card-info text-white">
-												<img src="images/pattern/circle.png" class="mb-4" alt="">
-												<h2 class="text-white card-balance">$824,571.93</h2>
-												<p class="fs-16">Wallet Balance</p>
-												<span>+0,8% than last week</span>
+												<img src="{% static "user_dashboard/images/pattern/circle.png" %}" class="mb-4" alt="">
+												<h2 class="text-white card-balance">${{balance}}</h2>
+												<p class="fs-20">Wallet Balance</p>
+
+												<div class="side-by-side" style="display: flex; gap: 4px;">													
+												<a href="{% url "withdraw" %}" style="font-size: 24px; padding: 10px; background: #13268b; width: 50%; border-radius: 10px; color: beige;">													<div class="card-icon" >
+														<i class="fas fa-wallet">
+															Withdraw
+														</i>
+														 
+													</div>
+												</a>
+												<a href="{% url "transactions_id" %}"style="font-size: 24px; padding: 10px; background: green; width: 50%; border-radius: 10px; color: beige;">
+													<div class="card-icon" >
+														<i class="fas fa-plus"><br>
+															Deposit	
+														</i>
+													</div>
+												</a>
+												</div>
 											</div>
-											<a class="change-btn" href="{% url "transactions_id" %}"><i class="fa fa-caret-up up-ico"></i>Deposit<span class="reload-icon"><i class="fas fa-sync-alt reload active"></i></span></a>
 										</div>
 									</div>
 					<div class="col-xl-3 col-xxl-7">
@@ -256,7 +287,7 @@
 							<div class="card-header border-0 pb-0">
 								<div>
 									<h4 class="card-title mb-2">Investments</h4>
-									<span class="fs-12">Lorem ipsum dolor sit amet, consectetur</span>
+									<span class="fs-12">Purchase stock and earn daily, 1000+</span>
 								</div>
 								<div class="dropdown">
 									<a href="javascript:void(0);" class="btn-link" data-bs-toggle="dropdown" aria-expanded="false">
@@ -267,20 +298,22 @@
 										</svg>
 									</a>
 									<div class="dropdown-menu dropdown-menu-right">
-										<a class="dropdown-item" href="javascript:void(0);">View Purchased</a>
-										<a class="dropdown-item" href="javascript:void(0);">Purchase Assets</a>
+										<a class="dropdown-item" href="{% url "purchased_items" %}" %}">View Purchased</a>
+										<a class="dropdown-item" href="{% url "assets" %}">Purchase Assets</a>
 									</div>
 								</div>
 							</div>
 							<div class="card-body">	
-								<div class="user-bx">
-									<img src="images/ion/man (1).png" alt="">
-									<div>
-										<h6 class="user-name">Purchased item</h6>
-										<span class="meta">Check out your purchased assets</span>
+								<a href="{% url "purchased_items" %}">
+									<div class="user-bx">
+										<img src="{% static "images/1j6F.gif" %}" alt="">
+										<div>
+											<h6 class="user-name">Purchased item</h6>
+											<span class="meta">Check out your purchased assets</span>
+										</div>
+										<i class="las la-check-circle check-icon"></i>
 									</div>
-									<i class="las la-check-circle check-icon"></i>
-								</div>
+								</a>
 								<h4 class="mt-3 mb-3">Assets<a href="/assets/" class="fs-16 float-end text-secondary font-w600">See More</a></h4>
 								<ul class="user-list">
 									<li><img src="images/ion/bussiness-man.png" alt=""></li>
