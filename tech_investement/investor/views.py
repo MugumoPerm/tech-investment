@@ -11,6 +11,9 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import datetime
+from django.http import HttpResponse
 
 
 # import models
@@ -449,34 +452,40 @@ def deposit(request):
 
 def make_withdraw(request, id):
     try:
-        # get the user
-        withdrawing_user = WithdrawalRequest.objects.get(id=id)
-        # get the amount to withdraw
-        amount = withdrawing_user.amount
-        # get the user account
-        user_account = UserAccount.objects.get(username=withdrawing_user.username)
-        phone_number = UserProfile.objects.get(username=withdrawing_user.username).phone_number
-        # check if the user has enough balance all together with bonus
-        total_balance = user_account.balance + user_account.bonus
-        if total_balance >= amount:
-            # withdraw the amount
-            user_account.balance -= amount
-            if user_account.balance < 0:
-                # withdraw the amount
-                user_account.bonus += user_account.balance
-                user_account.balance = 0
-            # save the user account
-            user_account.save()
-            # save the amount withdrawn
-            withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number, name=withdrawing_user.confirmation_name, status=True)
-            withdraw.save()
-            messages.success(request, 'withdrawal successful')
-            # delete the withdrawal request
-            withdrawing_user.delete()
+        # get the current date
+        current_date = timezone.now()
+        if current_date.weekday() > 5:
+            messages.error(request, "Withdrawals are done on weekdays only")
             return redirect('amount_withdrawn')
         else:
-            messages.error(request, 'insufficient balance')
-            return redirect('amount_withdrawn')
+            # get the user
+            withdrawing_user = WithdrawalRequest.objects.get(id=id)
+            # get the amount to withdraw
+            amount = withdrawing_user.amount
+            # get the user account
+            user_account = UserAccount.objects.get(username=withdrawing_user.username)
+            phone_number = UserProfile.objects.get(username=withdrawing_user.username).phone_number
+            # check if the user has enough balance all together with bonus
+            total_balance = user_account.balance + user_account.bonus
+            if total_balance >= amount:
+                # withdraw the amount
+                user_account.balance -= amount
+                if user_account.balance < 0:
+                    # withdraw the amount
+                    user_account.bonus += user_account.balance
+                    user_account.balance = 0
+                # save the user account
+                user_account.save()
+                # save the amount withdrawn
+                withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number, name=withdrawing_user.confirmation_name, status=True)
+                withdraw.save()
+                messages.success(request, 'withdrawal successful')
+                # delete the withdrawal request
+                withdrawing_user.delete()
+                return redirect('amount_withdrawn')
+            else:
+                messages.error(request, 'insufficient balance')
+                return redirect('amount_withdrawn')
     except WithdrawalRequest.DoesNotExist:
         messages.error(request, 'withdrawal failed')
         return redirect('amount_withdrawn')
@@ -497,23 +506,28 @@ def withdraw_request(request):
             phone_number = form.cleaned_data['phone_number']
             confirmation_name = form.cleaned_data['confirmation_name']
             #first check if the user has already requested for a withdrawal
-            if WithdrawalRequest.objects.filter(username=request.user.username).exists():
-                messages.error(request, 'Wait kindly as we process the previous withdrawal')
+            current_date = timezone.now()
+            if current_date.weekday() > 5:
+                messages.error(request, "Withdrawals are done on weekdays only")
                 return redirect('withdraw')
-            # check if the user has enough balance all together with bonus
-            user_account = UserAccount.objects.get(username=request.user.username)
-            total_balance = user_account.balance + user_account.bonus
-            if total_balance < amount:
-                messages.error(request, 'insufficient balance')
-                return redirect('withdraw')
-            elif amount < 1000:
-                messages.error(request, 'minimum withdrawal amount is 1000')
-                return redirect('withdraw')
-            # save the amount to the withdrawal request model
-            withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=phone_number, confirmation_name=confirmation_name)
-            withdraw.save()
-            messages.success(request, 'withdrawal request successful')
-            return redirect('withdraw_status')
+            else:
+                if WithdrawalRequest.objects.filter(username=request.user.username).exists():
+                    messages.error(request, 'Wait kindly as we process the previous withdrawal')
+                    return redirect('withdraw')
+                # check if the user has enough balance all together with bonus
+                user_account = UserAccount.objects.get(username=request.user.username)
+                total_balance = user_account.balance + user_account.bonus
+                if total_balance < amount:
+                    messages.error(request, 'insufficient balance')
+                    return redirect('withdraw')
+                elif amount < 1000:
+                    messages.error(request, 'minimum withdrawal amount is 1000')
+                    return redirect('withdraw')
+                # save the amount to the withdrawal request model
+                withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=phone_number, confirmation_name=confirmation_name)
+                withdraw.save()
+                messages.success(request, 'withdrawal request successful')
+                return redirect('withdraw_status')
     context = {'form': form}
     return render(request, 'user/withdraw.html', context)
 
