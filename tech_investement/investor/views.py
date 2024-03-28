@@ -11,6 +11,9 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.contrib.auth import get_user_model
+from django.utils import timezone
+from datetime import datetime
+from django.http import HttpResponse
 
 
 # import models
@@ -117,10 +120,12 @@ def dashboard(request):
         user_profile = UserProfile.objects.get(username=request.user.username)
     else:
         user_profile = None
+    
+    assets = Item.objects.all()
 
 
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'products': [100, 200, 30, 40, 500]}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
@@ -256,6 +261,7 @@ def transactions_id(request):
         if form.is_valid():
             transaction_id = form.cleaned_data['transactions_id']
             amount_paid = form.cleaned_data['amount_paid']
+            name = form.cleaned_data['name']
             # check if the transaction id exists
             if UserAccount.objects.filter(transactions_id=transaction_id).exists():
                 # return an error message to the user
@@ -267,7 +273,7 @@ def transactions_id(request):
                 messages.error(request, 'Transaction ID has already been used')
                 return redirect('transactions_id')
             else:
-                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid, phone_number=request.user.profile.phone_number)
+                deposit = Deposit.objects.create(username=request.user.username,transactions_id=transaction_id, amount_paid=amount_paid, phone_number=request.user.profile.phone_number, name=name)
                 deposit.save()
                 # save the transaction id to the user account
                 user_account = UserAccount.objects.get(username=request.user.username)
@@ -320,7 +326,7 @@ def make_deposit(request, id):
         # save the user account
         user_account.save()
         # save the transaction id and the deposited amount to the Transaction_ids model
-        transaction_id = Transaction_ids.objects.create(user=user_account.username, transactions_id=transaction_id, amount_deposited=amount)
+        transaction_id = Transaction_ids.objects.create(user=user_account.username, transactions_id=transaction_id, amount_deposited=amount, name=user.name)
         transaction_id.save()
         # update balance and bonus if the user has been recommended by another user
         if UserProfile.objects.get(username = user_account.username).recommended_by:
@@ -448,34 +454,40 @@ def deposit(request):
 
 def make_withdraw(request, id):
     try:
-        # get the user
-        withdrawing_user = WithdrawalRequest.objects.get(id=id)
-        # get the amount to withdraw
-        amount = withdrawing_user.amount
-        # get the user account
-        user_account = UserAccount.objects.get(username=withdrawing_user.username)
-        phone_number = UserProfile.objects.get(username=withdrawing_user.username).phone_number
-        # check if the user has enough balance all together with bonus
-        total_balance = user_account.balance + user_account.bonus
-        if total_balance >= amount:
-            # withdraw the amount
-            user_account.balance -= amount
-            if user_account.balance < 0:
-                # withdraw the amount
-                user_account.bonus += user_account.balance
-                user_account.balance = 0
-            # save the user account
-            user_account.save()
-            # save the amount withdrawn
-            withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number)
-            withdraw.save()
-            messages.success(request, 'withdrawal successful')
-            # delete the withdrawal request
-            withdrawing_user.delete()
+        # get the current date
+        current_date = timezone.now()
+        if current_date.weekday() > 5:
+            messages.error(request, "Withdrawals are done on weekdays only")
             return redirect('amount_withdrawn')
         else:
-            messages.error(request, 'insufficient balance')
-            return redirect('amount_withdrawn')
+            # get the user
+            withdrawing_user = WithdrawalRequest.objects.get(id=id)
+            # get the amount to withdraw
+            amount = withdrawing_user.amount
+            # get the user account
+            user_account = UserAccount.objects.get(username=withdrawing_user.username)
+            phone_number = UserProfile.objects.get(username=withdrawing_user.username).phone_number
+            # check if the user has enough balance all together with bonus
+            total_balance = user_account.balance + user_account.bonus
+            if total_balance >= amount:
+                # withdraw the amount
+                user_account.balance -= amount
+                if user_account.balance < 0:
+                    # withdraw the amount
+                    user_account.bonus += user_account.balance
+                    user_account.balance = 0
+                # save the user account
+                user_account.save()
+                # save the amount withdrawn
+                withdraw = Withdrawal.objects.create(username=withdrawing_user.username, withdrawn=amount, phone_number=phone_number, name=withdrawing_user.confirmation_name, status=True)
+                withdraw.save()
+                messages.success(request, 'withdrawal successful')
+                # delete the withdrawal request
+                withdrawing_user.delete()
+                return redirect('amount_withdrawn')
+            else:
+                messages.error(request, 'insufficient balance')
+                return redirect('amount_withdrawn')
     except WithdrawalRequest.DoesNotExist:
         messages.error(request, 'withdrawal failed')
         return redirect('amount_withdrawn')
@@ -493,24 +505,31 @@ def withdraw_request(request):
         form = withdraw_form(request.POST)
         if form.is_valid():
             amount = form.cleaned_data['amount']
+            phone_number = form.cleaned_data['phone_number']
+            confirmation_name = form.cleaned_data['confirmation_name']
             #first check if the user has already requested for a withdrawal
-            if WithdrawalRequest.objects.filter(username=request.user.username).exists():
-                messages.error(request, 'Wait kindly as we process the previous withdrawal')
+            current_date = timezone.now()
+            if current_date.weekday() > 5:
+                messages.error(request, "Withdrawals are done on weekdays only")
                 return redirect('withdraw')
-            # check if the user has enough balance all together with bonus
-            user_account = UserAccount.objects.get(username=request.user.username)
-            total_balance = user_account.balance + user_account.bonus
-            if total_balance < amount:
-                messages.error(request, 'insufficient balance')
-                return redirect('withdraw')
-            elif amount < 1000:
-                messages.error(request, 'minimum withdrawal amount is 1000')
-                return redirect('withdraw')
-            # save the amount to the withdrawal request model
-            withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=request.user.profile.phone_number)
-            withdraw.save()
-            messages.success(request, 'withdrawal request successful')
-            return redirect('withdraw_status')
+            else:
+                if WithdrawalRequest.objects.filter(username=request.user.username).exists():
+                    messages.error(request, 'Wait kindly as we process the previous withdrawal')
+                    return redirect('withdraw')
+                # check if the user has enough balance all together with bonus
+                user_account = UserAccount.objects.get(username=request.user.username)
+                total_balance = user_account.balance + user_account.bonus
+                if total_balance < amount:
+                    messages.error(request, 'insufficient balance')
+                    return redirect('withdraw')
+                elif amount < 1000:
+                    messages.error(request, 'minimum withdrawal amount is 1000')
+                    return redirect('withdraw')
+                # save the amount to the withdrawal request model
+                withdraw = WithdrawalRequest.objects.create(username=request.user.username, amount=amount, phone_number=phone_number, confirmation_name=confirmation_name)
+                withdraw.save()
+                messages.success(request, 'withdrawal request successful')
+                return redirect('withdraw_status')
     context = {'form': form}
     return render(request, 'user/withdraw.html', context)
 
@@ -544,21 +563,33 @@ def assets(request):
     return render(request, 'assets/assets.html', {'items': items, 'balance': user_balance})
 
 
-@login_required
-def purchase_item(request, item_id):
-    # item = Item.objects.get(pk=item_id)
-    # if request.method == 'POST':
-    #     # Perform purchase operation
-    #     purchase = Purchase.objects.create(user=request.user, item=item)
-    #     purchase.save()
-    #     return redirect('purchase_success')
-    return render(request, 'assets/purchase_item.html', {'item': item})
+def purchase_item(request, id):
+    items = Item.objects.get(pk=id)
+    user = UserAccount.objects.get(username=request.user)
+    user_profile = UserProfile.objects.get(username=request.user)
+    if user.balance >= items.price:
+        # deduct the amount from the user account
+        user.balance -= items.price
+        user.save()
+        # save the purchase
+        purchase = Purchase(user=user_profile, item=items)
+        purchase.save()
+        messages.success(request, 'purchased successful')
+        return redirect('purchase_success',id=id)
+    else:
+        messages.error(request, 'insufficient balance')
+        return redirect('assets')
+    
+def purchase_success(request, id):
+    items = Item.objects.filter(pk=id)
+    balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user.username).balance)
+    return render(request, 'assets/purchase_success.html', {'items': items  , 'balance': balance})
 
-@login_required
-def purchase_success(request):
-    purchases = Purchase.objects.filter(user=request.user)
-    return render(request, 'purchase_success.html', {'purchases': purchases})
+def purchased_items(request):
+    purchases = Purchase.objects.filter(user=request.user.profile)
+    return render(request, 'assets/purchased_items.html', {'purchases': purchases})
 
+# ***************recommendation***************
 def recommended_users(request):
     profile = []
     for prof in UserProfile.objects.all():

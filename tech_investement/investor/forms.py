@@ -10,6 +10,8 @@ from .models import UserProfile, UserAccount, Deposit, Withdrawal, WithdrawalReq
 class CreateUserForm(UserCreationForm):
     email = forms.EmailField(required=True, max_length=254)
     username = forms.CharField(required=True, max_length=254)
+    password1 = forms.CharField(required=True, max_length=15, widget=forms.PasswordInput())
+    password2 = forms.CharField(required=True, max_length=15, widget=forms.PasswordInput())
 
     class Meta:
         model = User 
@@ -23,8 +25,8 @@ class UserProfileForm(forms.ModelForm):
 
 # login
 class loginForm(forms.Form):
-    username = forms.CharField(max_length=12)
-    password = forms.CharField(max_length=12, widget=forms.PasswordInput())
+    username = forms.CharField(max_length=15)
+    password = forms.CharField(max_length=15, widget=forms.PasswordInput())
     
     class Meta:
         fields = ["username", "password"]
@@ -43,12 +45,12 @@ class reset_passwordForm(forms.Form):
 class transactions_id_form(forms.ModelForm):
     class Meta:
         model = UserAccount
-        fields = ['transactions_id',]
+        fields = ['transactions_id']
 
 class user_deposit_form(forms.ModelForm):
     class Meta:
         model = Deposit
-        fields = ['transactions_id', 'amount_paid',]
+        fields = ['transactions_id', 'amount_paid','name']
 
 class deposit_form(forms.ModelForm):
     class Meta:
@@ -58,7 +60,7 @@ class deposit_form(forms.ModelForm):
 class withdraw_form(forms.ModelForm):
     class Meta:
         model = WithdrawalRequest
-        fields = ['amount']
+        fields = ['amount', 'phone_number', 'confirmation_name']
 
 # search form
 class searchForm(forms.Form):

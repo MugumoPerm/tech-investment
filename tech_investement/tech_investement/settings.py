@@ -92,6 +92,33 @@ DATABASES = {
     }
 }
 
+############### mysql ################
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'investor',
+#         'USER': 'permo',
+#         'PASSWORD': 'kali',
+#         'HOST': 'localhost',   # Or the hostname where your MySQL server is running
+#         'PORT': '3306',        # Default MySQL port
+#     }
+# }
+
+#####################end mysql####################
+
+############### postgress ################
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'investor',
+#         'USER': 'permo',
+#         'PASSWORD': 'kali',
+#         'HOST': 'localhost',   # Or the hostname where your MySQL server is running
+#         'PORT': '',
+#     }
+# }
+
+#####################end postgress####################
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -120,7 +147,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 

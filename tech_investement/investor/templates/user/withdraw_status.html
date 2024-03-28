@@ -1,19 +1,32 @@
 {% extends 'table_layout.html' %}
 
+{% load static %}
+
 {% block title %} Withdraw status {% endblock title %}
 
 {% block heading %} Withdraw status {% endblock heading %}
 
 {% block content %}
+{% for message in messages %}
+<div class="alert alert-{{ message.tags }}">
+	{{ message }}
+</div>
+{% endfor %}
 
 <!-- htmx ajax request to get the processing and completed withdrawals using buttons -->
 <div class="container">
 	<div class="row">
 		<div class="col-md-12">
 			<div class= role="group" aria-label="Basic example">
-				<button type="button" class="btn btn-primary" hx-get="{% url 'withdraw_status_pending' %}" hx-target="#status" >Pending</button>
+				<button type="button" class="btn btn-primary" hx-get="{% url 'withdraw_status_pending' %}" hx-target="#status" >Pending
+
+					<img style="width: 20px;"  class="htmx-indicator" src="{% static "images/ZKZg.gif" %}">
+				</button>
 				<br>
-				<button type="button" class="btn btn-success" hx-get="{% url 'withdraw_status_completed' %}" hx-target="#status">Completed</button>
+				<button type="button" class="btn btn-success" hx-get="{% url 'withdraw_status_completed' %}" hx-target="#status">Completed
+
+					<img style="width: 20px;"  class="htmx-indicator" src="{% static "images/ZKZg.gif" %}">
+				</button>
 			</div>
 		</div>
 	</div><br>

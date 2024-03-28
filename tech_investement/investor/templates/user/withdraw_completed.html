@@ -3,6 +3,7 @@
         <thead>
             <th><input type="checkbox" id="checkall" /></th>
 			<th>WITHDRAWN</th>
+			<th>Paid to</th>
 			<th>Date</th>
             <th>status</th>
         </thead>
@@ -11,6 +12,7 @@
             <tr>  
             <td><input type="checkbox" class="checkthis" /></td>
 			<td>{{ user.withdrawn }}</td>
+			<td>{{ user.name }}</td>
 			<td>{{ user.date }}</td>
 			<td> <p class="btn btn-success">Completed </p></td>
 			</tr>  

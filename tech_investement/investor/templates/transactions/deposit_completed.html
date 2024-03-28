@@ -5,6 +5,7 @@
             <th>ID</th>
             <th>username</th>
 			<th>Transaction id</th>
+			<th>Name</th>
 			<th>Amount Deposited</th>
             <th>Edit</th>
             <th>Delete</th>
@@ -16,6 +17,7 @@
             <td>{{ transaction.id }}</td> 
             <td>{{ transaction.user }}</td>  
 			<td>{{ transaction.transactions_id }}</td>
+			<td>{{ transaction.name }}</td>
 			<td>{{ transaction.amount_deposited }}</td>
             <td><a href="/edit/{{ user.id }}" class="btn btn-primary">Edit</a></td>
             <td><a href="/delete_transaction/{{ transaction.id }}" class="btn btn-danger">Delete</a></td>  

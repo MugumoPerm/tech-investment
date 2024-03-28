@@ -8,6 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+<script src="https://unpkg.com/htmx.org@1.9.10" integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC" crossorigin="anonymous"></script>
+
 <style>
 :root {
 	--bg: black;
@@ -42,7 +44,7 @@ header {
 	width: 100%;
 	padding: 10px;
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
 	align-items: center;
 	background: var(--bg);
 	backdrop-filter: blur(10px); /* Add blur effect */
@@ -53,6 +55,7 @@ header {
 main.cards {
     display: flex;
     padding: 32px;
+	overflow: auto !important;
 }
 
 main.cards section.card {
@@ -69,6 +72,7 @@ main.cards section.card {
 
 main.cards section.card:first-child {
     margin-left: 0;
+	margin-top: inherit;
 }
 
 main.cards section.card .icon {
@@ -115,13 +119,13 @@ main.cards section.card.about button {
 }
 
 main.cards section.card.contact {
-    box-shadow: 20px 20px 50px -30px #5bdba8;
+    box-shadow: 20px 20px 50px -25px #5bdba8;
 }
 main.cards section.card.shop {
-    box-shadow: 20px 20px 50px -30px #4681bf;
+    box-shadow: 20px 20px 50px -25px #4681bf;
 }
 main.cards section.card.about {
-    box-shadow: 20px 20px 50px -30px #e3a045;
+    box-shadow: 20px 20px 50px -25px #e3a045;
 }
 
 @media screen and (max-width: 280px) and (max-height: 653px){
@@ -170,7 +174,8 @@ main.cards section.card.about {
 
 </style>
 </head>
-<body>
+<body {%block bodystyle %}{% endblock %} >
+
 	<header>
 		<div class="container">
 			<h2 style="margin-left: 10px;">{%block header %} {% endblock %} </h1>
@@ -178,11 +183,11 @@ main.cards section.card.about {
 			
 		</div>
 <span style="margin-left: 40px;" id="colorSwitchButton" class="material-symbols-outlined">
-contrast
+settings_brightness
 </span>
 	</header>
 
-	<main class="cards">
+	<main class="cards" {% block main_card_style %}{% endblock %}>
 	{% block card %}	
    	{% endblock %}
 	</main>

@@ -16,11 +16,11 @@ from .utils import generate_uuid
 class UserProfile(AbstractUser):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
     username = models.CharField(max_length=12, unique=True, null=False, blank=False, default=True)
-    registration_number = models.CharField(max_length=12, blank=True)
+    registration_number = models.CharField(max_length=50, blank=True)
     email = models.EmailField(unique=True, null=False, blank=False)
     phone_number = models.IntegerField(unique=True, null=False, blank=False, default=True)
     date_joined = models.DateTimeField(auto_now_add=True)
-    code = models.CharField(max_length=12, blank=True)
+    code = models.CharField(max_length=50, blank=True)
     recommended_by = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
@@ -54,7 +54,7 @@ class UserProfile(AbstractUser):
         if self.code == "" or self.registration_number == "":
             # Generate a new code for the user
             code = generate_uuid()
-            registration_number = generate_uuid()*2
+            registration_number = generate_uuid()
             self.code = code
             self.registration_number = registration_number
         super().save(*args, **kwargs)
@@ -90,6 +90,7 @@ class UserAccount(models.Model):
 class Transaction_ids(models.Model):
     user = models.CharField(max_length=50)
     transactions_id = models.CharField(max_length=12)
+    name = models.CharField(max_length=12, null=False, blank=False)
     amount_deposited = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
@@ -98,6 +99,7 @@ class Transaction_ids(models.Model):
 # # deposits
 class Deposit(models.Model):
     username = models.CharField(max_length=12, null=False, blank=False)
+    name = models.CharField(max_length=12, null=False, blank=False)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     phone_number = models.IntegerField(null=False, blank=False)
     date = models.DateTimeField(auto_now_add=True)
@@ -109,6 +111,7 @@ class Deposit(models.Model):
 class Withdrawal(models.Model):
     username = models.CharField(max_length=12, null=False, blank=False)
     phone_number = models.IntegerField(null=False, blank=False)
+    name = models.CharField(max_length=12, null=False, blank=False)
     withdrawn = models.DecimalField(max_digits=10, decimal_places=2)
     status = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
@@ -120,6 +123,7 @@ class WithdrawalRequest(models.Model):
     username = models.CharField(max_length=12, null=False, blank=False)
     phone_number = models.IntegerField(null=False, blank=False)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
+    confirmation_name = models.CharField(max_length=12, null=False, blank=False)
     status = models.BooleanField(default=False)
     date = models.DateTimeField(auto_now_add=True)
     def __str__(self):
@@ -158,6 +162,10 @@ class Item(models.Model):
 class Purchase(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    title = models.CharField(max_length=12, null=False, blank=False, default=True)
+    description = models.TextField()
+    image = models.FileField(upload_to='assets/', null=True, blank=True)
     purchase_date = models.DateTimeField(default=timezone.now)
     released = models.BooleanField(default=False)
 

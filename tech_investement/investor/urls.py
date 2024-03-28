@@ -50,8 +50,8 @@ urlpatterns = [
     # Ajax
     path('withdraw_status/completed/', views.withdraw_status_completed, name='withdraw_status_completed'),
     path('withdraw_status/pending/', views.withdraw_status_pending, name='withdraw_status_pending'),
-    path('withdraw_completed/', views.withdraw_completed, name='withdraw_completed'),
-    path('deposit_completed/', views.deposit_completed, name='deposit_completed'),
+    path('transactions_history/withdraw_completed/', views.withdraw_completed, name='withdraw_completed'),
+    path('transactions_history/deposit_completed/', views.deposit_completed, name='deposit_completed'),
     # ############################################
     # ################transactions################
     # ############################################
@@ -59,8 +59,9 @@ urlpatterns = [
 
     #assets
     path('assets/', views.assets, name='assets'),
-    path('purchase/<int:item_id>/', views.purchase_item, name='purchase_item'),
-    path('purchase/success/', views.purchase_success, name='purchase_success'),
+    path('purchase/<int:id>', views.purchase_item, name='purchase_item'),
+    path('purchase/success/<int:id>/', views.purchase_success, name='purchase_success'),
+    path('purchased_items/', views.purchased_items, name='purchased_items'),
 
     #admin
     

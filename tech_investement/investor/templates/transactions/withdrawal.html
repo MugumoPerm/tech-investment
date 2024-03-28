@@ -23,6 +23,7 @@
             <th>ID</th>
             <th>Username</th>
 			<th>phone number</th>
+			<th>confirmation name</th>
 			<th>Amount Withdrawn</th>
 			<th>Date</th>
             <th>Edit</th>
@@ -36,6 +37,7 @@
             <td>{{ user.id }}</td> 
             <td>{{ user.username }}</td>
 			<td>{{ user.phone_number }}</td>
+			<td>{{ user.confirmation_name }}</td>
 			<td>{{ user.amount }}</td>
 			<td>{{ user.date }}</td>
             <td><a href="/edit_withdraw/{{ user.id }}" class="btn btn-primary">Edit</a></td>

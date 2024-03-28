@@ -4,20 +4,34 @@
 
 {% block body %}
 
-{% if messages %}
-	{% for message in messages %}
-		<div class="alert alert-{{ message.tags }}">
-			{{ message }}
-		</div>
-	{% endfor %}
-{% endif %}
+<div class="message_container" style="display: flex; justify-content: center; ">
+	{% if messages %}
+		{% for message in messages %}
+		{% if message.tags == 'success' %} 	
+			<div class="alert alert-success" role="alert">
+				{{ message }}
+			</div>
+		{% elif message.tags == 'error' %}
+			<div class="alert alert-danger" role="alert">
+				{{ message }}, <a href="/withdraw_status/" class="close">view status</a>
+
+			</div>
+		{% endif %}
+		{% endfor %}
+	{% endif %}
+</div>
+
 
 	<h1>Withdraw</h1>
 	<form action="{% url 'withdraw' %}" method="post">
 		{% csrf_token %}
-		<label for="amount">Amount</label>
-		{% render_field form.amount class="form-control" %}
+		<label for="amount">Amount</label><br>
+		{% render_field form.amount class="form-control" %}<br>
+		<label for="phone_number">Phone Number</label><br>
+		{% render_field form.phone_number class="form-control" %}
 		<br>
+		<label for="confirmation_name">Confirmation Name</label><br>
+		{% render_field form.confirmation_name class="form-control" %}<br>
 		<input type="submit" value="Withdraw">
 	</form>
 <button onclick="location.href='{% url 'dashboard' %}'">Back</button>
