@@ -61,7 +61,12 @@ def adminDashboard(request):
     for user in UserProfile.objects.all():
         total_amount += user.UserAccount.balance
     total_amount = "{:,.2f}".format(total_amount)
-    
+
+    total_bonus = 0
+    for user in UserProfile.objects.all():
+        total_bonus += user.UserAccount.bonus
+    total_bonus = "{:,.2f}".format(total_bonus)
+
     # calculate the total number deposits
     deposits = Deposit.objects.all().order_by('-date')
     deposits_count = len(deposits)
@@ -74,7 +79,7 @@ def adminDashboard(request):
     user_profiles = UserProfile.objects.all()
     user_profiles_count = len(user_profiles)
 
-    context = {'message':message, 'total_amount':total_amount , 'customers':user_profiles_count , 'deposited':deposits_count ,'withdrawed':withdrawals_count, 'products': [100, 200, 30, 40, 500]}
+    context = {'message':message, 'total_amount':total_amount , "total_bonus":total_bonus, 'customers':user_profiles_count , 'deposited':deposits_count ,'withdrawed':withdrawals_count, 'products': [100, 200, 30, 40, 500]}
     return render(request, 'admin/adminDashboard.html', context)
 
 
