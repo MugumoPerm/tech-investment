@@ -120,10 +120,12 @@ def dashboard(request):
         user_profile = UserProfile.objects.get(username=request.user.username)
     else:
         user_profile = None
+    
+    assets = Item.objects.all()
 
 
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'products': [100, 200, 30, 40, 500]}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
