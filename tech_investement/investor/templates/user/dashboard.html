@@ -140,9 +140,9 @@
 						</a>
 						
 					</li>
-                    <li><a href="javascript:void()" aria-expanded="false">
+                    <li><a href="/assets/" aria-expanded="false">
 							<i class="flaticon-025-dashboard"></i>
-							<span class="nav-text">Dashboard</span>
+							<span class="nav-text">Investments</span>
 						</a>
                     </li>
 					<li><a href="{% url "transactions_id" %}" aria-expanded="false">
@@ -165,9 +165,9 @@
 							<span class="nav-text">Refer friends</span>
 						</a>
                     </li>
-                    <li><a href="widget-basic.html" class="ai-icon" aria-expanded="false">
+					<li><a href="{% url "purchased_items" %}" class="ai-icon" aria-expanded="false">
 							<i class="flaticon-013-checkmark"></i>
-							<span class="nav-text">Widget</span>
+							<span class="nav-text">Purchased Assets</span>
 						</a>
 					</li>
                     <li><a href="javascript:void()" aria-expanded="false">
@@ -225,10 +225,21 @@
 									</svg>
 									
 								</div>
+							<div class="refer-container" style="display: flex; gap: 2rem;">
 								<div>
 									<h2 class="text-white invoice-num">{{recommended_users}}</h2>
 									<span class="text-white fs-18">Total Referred</span>
+										
 								</div>
+								<div class="referral-container" onclick="copyText()"style="padding: 7px; color: coral; cursor: pointer;">
+											<span id="referralLink" style="display: none; font-size: ;">http://192.168.43.53:2000/auth/register/{{user_profile.code}}/</span>
+
+											<span style="cursor:pointer; font-size: 30px;"  class="material-icons-outlined">copy</span><br>
+
+											<span> Referral link</span>
+
+								</div>
+							</div>
 							</div>
 						</div>
 					</div>
@@ -309,7 +320,7 @@
 										<img src="{% static "images/1j6F.gif" %}" alt="">
 										<div>
 											<h6 class="user-name">Purchased item</h6>
-											<span class="meta">Check out your purchased assets</span>
+											<span class="meta" style="color: rebeccapurple;">Check out your purchased assets</span>
 										</div>
 										<i class="las la-check-circle check-icon"></i>
 									</div>
@@ -328,7 +339,7 @@
                                     <div id="slider-format"></div>
                                 </div>
 								<div class="text-secondary fs-16 d-flex justify-content-between font-w600 mt-4">
-									<span>Your Earnings</span>
+									<span>Your Investments Returns/Profit</span>
 									<span>$ 456,345.62</span>
 								</div>
 							</div>
@@ -408,7 +419,18 @@
 	<script src="{% static "user_dashboard/js/dlabnav-init.js" %}"></script>
 	<script src="{% static "user_dashboard/js/demo.js" %}"></script>
     <script src="{% static "user_dashboard/js/styleSwitcher.js" %}"></script>
-	
+	<script>
+		function copyText() {
+		  var copyText = document.getElementById("referralLink");
+		  var textArea = document.createElement("textarea");
+		  textArea.value = copyText.textContent;
+		  document.body.appendChild(textArea);
+		  textArea.select();
+		  document.execCommand("copy");
+		  document.body.removeChild(textArea);
+		  alert("Link Copied: " + copyText.textContent);
+		}
+	</script>
 </body>
 
 </html>
