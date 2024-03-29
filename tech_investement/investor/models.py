@@ -18,7 +18,7 @@ class UserProfile(AbstractUser):
     username = models.CharField(max_length=12, unique=True, null=False, blank=False, default=True)
     registration_number = models.CharField(max_length=50, blank=True)
     email = models.EmailField(unique=True, null=False, blank=False)
-    phone_number = models.IntegerField(unique=True, null=False, blank=False, default=True)
+    phone_number = models.BigIntegerField()
     date_joined = models.DateTimeField(auto_now_add=True)
     code = models.CharField(max_length=50, blank=True)
     recommended_by = models.ForeignKey(
