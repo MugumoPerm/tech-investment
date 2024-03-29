@@ -27232,7 +27232,7 @@ table.dataTable.display tbody td {
     margin-bottom: 5px; }
     @media only screen and (max-width: 1600px) {
       .invoice-card-row .invoice-card .invoice-num {
-        font-size: 30px; } }
+        font-size: 18px; } }
   .invoice-card-row .invoice-card:after {
     position: absolute;
     content: ""; }
@@ -27240,7 +27240,7 @@ table.dataTable.display tbody td {
     .invoice-card-row .invoice-card .card-body {
       padding: 15px 20px 15px 20px; }
     .invoice-card-row .invoice-card .invoice-num {
-      font-size: 30px; } }
+      font-size: 15px; } }
 
 .invoice-card-row > div:nth-child(1) .invoice-card:after {
   height: 120px;
