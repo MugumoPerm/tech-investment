@@ -131,30 +131,58 @@ class WithdrawalRequest(models.Model):
 
 
 # assets
+# class Item(models.Model):
+#     name = models.CharField(max_length=12, null=False, blank=False, default=True)
+#     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+#     title = models.CharField(max_length=12, null=False, blank=False, default=True)
+#     description = models.TextField()
+#     image = models.ImageField(upload_to='assets/', null=True, blank=True)
+#     release_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+#     release_date = models.DateTimeField(auto_now_add=True)
+    
+#     def release(self):
+#         self.release_date = timezone.now() + timezone.timedelta(days=2)
+#         self.save()
+#         # update balance when released
+#         self.release_amount = self.price * 0.1
+#         self.save()
+
+
+
+#     def is_released(self):
+#         return self.release_date and self.release_date <= timezone.now()
+    
+
+#     def __str__(self):
+#         return self.name
 class Item(models.Model):
-    name = models.CharField(max_length=12, null=False, blank=False, default=True)
+    name = models.CharField(max_length=12, null=False, blank=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    title = models.CharField(max_length=12, null=False, blank=False, default=True)
+    title = models.CharField(max_length=12, null=False, blank=False)
     description = models.TextField()
     image = models.ImageField(upload_to='assets/', null=True, blank=True)
     release_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     release_date = models.DateTimeField(auto_now_add=True)
-    
-    def release(self):
-        self.release_date = timezone.now() + timezone.timedelta(days=2)
-        self.save()
-        # update balance when released
-        self.release_amount = self.price * 0.1
-        self.save()
 
+    def update_user_balance(self):
+        from datetime import timedelta
+        users = UserAccount.objects.filter(transactions_id=self.id)
+        for user in users:
+            # Check if the last balance update was more than 1 day ago
+            last_update = user.date
+            if not last_update or timezone.now() - last_update >= timedelta(minutes=1):
+                user.balance += self.release_amount
+                user.date = timezone.now()
+                user.save()
 
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Call the update_user_balance method when the item is saved
+        self.update_user_balance()
 
+    @property
     def is_released(self):
-        return self.release_date and self.release_date <= timezone.now()
-    
-
-    def __str__(self):
-        return self.name
+        return timezone.now() >= self.release_date
 
     def __str__(self):
         return f"Asset Name: {self.name}, Asset Value: {self.price}, Release Amount: {self.release_amount}, Release Date: {self.release_date}"

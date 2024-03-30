@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -129,6 +130,8 @@ main.cards section.card.about {
 }
 
 @media screen and (max-width: 280px) and (max-height: 653px){
+
+
 	main.cards section.card:first-child {
 		margin-left: 0;
 		margin-top: 180vh;
@@ -154,6 +157,7 @@ main.cards section.card.about {
 
 
 @media screen and (min-width: 281px) and (max-width: 720px){
+	
 	main.cards section.card:first-child {
 		margin-top: 100vh;
 	}
@@ -180,6 +184,12 @@ main.cards section.card.about {
 
 }
 
+@media screen and (min-width: 1024px) and (max-width: 1280px){
+	body{
+	height: 86vh;
+
+}
+
 
 
 </style>
@@ -187,13 +197,25 @@ main.cards section.card.about {
 <body {%block bodystyle %}{% endblock %} >
 
 	<header>
+		<div>
+
+			<a href="{% url "dashboard" %}"  >
+				<!-- <img src="{% static "images/dashboard.png" %}" alt="logo" style="width: 50px; height: 50px; margin-left: 10px;"> -->
+				<span style="font-size: 30px; color: var(--txt);" class="material-symbols-outlined">
+					home
+				</span>
+
+
+			</a>
+        
+    </div>
 		<div class="container">
 			<h2 style="margin-left: 10px;">{%block header %} {% endblock %} </h1>
 			<h3 style="margin-left: 10px; color: green;">{% block balance %}{% endblock %}</h2>
 			
 		</div>
-<span style="margin-left: 40px;" id="colorSwitchButton" class="material-symbols-outlined">
-settings_brightness
+<span style="margin-right: 1rem; font-size: 30px;" id="colorSwitchButton" class="material-symbols-outlined">
+routine
 </span>
 	</header>
 
