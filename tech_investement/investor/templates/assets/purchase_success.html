@@ -4,7 +4,7 @@
 
 {% for message in messages %}
 				{% if "success" in message.tags %}
-					<span id='message' style="color: yellowgreen; top: 10%;">{{ message }}</span>
+					<span id='message' style="color: #00ff2b; top: 110%; position: absolute; left: 40%;">{{ message }}</span>
 				{% endif %}
 {% endfor %}
 
@@ -17,7 +17,6 @@ balance: {{ balance }}<br>
 {% endblock balance %}
 
 {% block bodystyle %}
-style="height:53vh;"
 
 {% endblock%}
 

@@ -514,7 +514,7 @@ def withdraw_request(request):
             confirmation_name = form.cleaned_data['confirmation_name']
             #first check if the user has already requested for a withdrawal
             current_date = timezone.now()
-            if current_date.weekday() > 5:
+            if current_date.weekday() >= 5:
                 messages.error(request, "Withdrawals are done on weekdays only")
                 return redirect('withdraw')
             else:
@@ -577,7 +577,7 @@ def purchase_item(request, id):
         user.balance -= items.price
         user.save()
         # save the purchase
-        purchase = Purchase(user=user_profile, item=items)
+        purchase = Purchase(user=user_profile, item=items, price=items.price, title=items.title, description=items.description, image=items.image.url)
         purchase.save()
         messages.success(request, 'purchased successful')
         return redirect('purchase_success',id=id)
