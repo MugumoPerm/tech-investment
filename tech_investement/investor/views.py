@@ -347,7 +347,6 @@ def make_deposit(request, id):
                         bonus = amount * 25
                         recommender_account.bonus += bonus / 100
                         # add the bonus to the recommender's account balance
-                        recommender_account.balance += bonus / 100
                         recommended_account.bonus_given = True
                         # save the accounts
                         recommended_account.save()    
@@ -364,8 +363,13 @@ def make_deposit(request, id):
                 else:
                     # delete the deposit after deposit
                     user.delete()
-                    messages.success(request, 'deposit successful by ' + user.username)
+                    messages.success(request, 'deposit successful and no bonus by ' + user.username)
                     return redirect('deposited_amount')
+            else:
+                # delete the deposit after deposit
+                user.delete()
+                messages.success(request, 'deposit successful by ' + user.username)
+                return redirect('deposited_amount')
         else:
             # delete the deposit after deposit
             user.delete()
