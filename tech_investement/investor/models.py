@@ -191,6 +191,7 @@ class Purchase(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    profit = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     title = models.CharField(max_length=12, null=False, blank=False, default=True)
     description = models.TextField()
     image = models.FileField(upload_to='assets/', null=True, blank=True)
