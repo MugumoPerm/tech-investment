@@ -131,9 +131,12 @@ def dashboard(request):
     # get number of purchased items
     purchased_items = Purchase.objects.filter(user=user_profile)
     purchased_items_count = len(purchased_items)
+    
+    # get total withdraws
+    withdraws = Withdrawal.objects.filter(username=request.user.username)
+    withdraws_count = len(withdraws)
 
-
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  , 'products': [100, 200, 30, 40, 500], 'assets': assets}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
