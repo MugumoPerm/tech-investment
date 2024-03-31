@@ -132,9 +132,13 @@ def dashboard(request):
     purchased_items = Purchase.objects.filter(user=user_profile)
     purchased_items_count = len(purchased_items)
     
-    # get total withdraws
+    # get total withdraws money
     withdraws = Withdrawal.objects.filter(username=request.user.username)
-    withdraws_count = len(withdraws)
+    # add total money withdrawn
+    withdraws_count = 0
+    for withdraw in withdraws:
+        withdraws_count += withdraw.withdrawn
+    withdraws_count = "{:,.2f}".format(withdraws_count)
 
     context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
@@ -345,9 +349,11 @@ def make_deposit(request, id):
             recommended_by = UserProfile.objects.get(username=user_account.username)
             recommender = recommended_by.recommended_by
             recommender_account = UserAccount.objects.get(username=recommender)
+            #check if he has some withdrawal transactions
+            recommmender_withdrawals = Withdrawal.objects.filter(username=recommender)
             recommended_account = UserAccount.objects.get(username=user_account.username)
             # check if the recommender has ever deposited
-            if recommender_account.balance > 0:
+            if recommender_account.balance > 0 or recommmender_withdrawals.exists():
                 if recommender_account.bonus_given == False:
                     if recommended_account.bonus_given == False:
                         bonus = amount * 25
@@ -524,6 +530,8 @@ def withdraw_request(request):
             confirmation_name = form.cleaned_data['confirmation_name']
             #first check if the user has already requested for a withdrawal
             current_date = timezone.now()
+            print('current date', current_date.weekday())
+            print('current date', current_date)
             if current_date.weekday() >= 5:
                 messages.error(request, "Withdrawals are done on weekdays only")
                 return redirect('withdraw')
@@ -587,7 +595,7 @@ def purchase_item(request, id):
         user.balance -= items.price
         user.save()
         # save the purchase
-        purchase = Purchase(user=user_profile, item=items, price=items.price, title=items.title, description=items.description, image=items.image.url)
+        purchase = Purchase(user=user_profile, item=items, price=items.price,profit=items.release_amount , title=items.title, description=items.description, image=items.image.url)
         purchase.save()
         messages.success(request, 'purchased successful')
         return redirect('purchase_success',id=id)
