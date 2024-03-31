@@ -471,7 +471,7 @@ def make_withdraw(request, id):
     try:
         # get the current date
         current_date = timezone.now()
-        if current_date.weekday() > 5:
+        if current_date.weekday() >= 5:
             messages.error(request, "Withdrawals are done on weekdays only")
             return redirect('amount_withdrawn')
         else:
