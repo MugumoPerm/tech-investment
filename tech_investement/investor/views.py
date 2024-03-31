@@ -128,9 +128,12 @@ def dashboard(request):
     
     assets = Item.objects.all()
 
+    # get number of purchased items
+    purchased_items = Purchase.objects.filter(user=user_profile)
+    purchased_items_count = len(purchased_items)
 
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'products': [100, 200, 30, 40, 500], 'assets': assets}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  , 'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
@@ -347,7 +350,6 @@ def make_deposit(request, id):
                         bonus = amount * 25
                         recommender_account.bonus += bonus / 100
                         # add the bonus to the recommender's account balance
-                        recommender_account.balance += bonus / 100
                         recommended_account.bonus_given = True
                         # save the accounts
                         recommended_account.save()    
@@ -364,8 +366,13 @@ def make_deposit(request, id):
                 else:
                     # delete the deposit after deposit
                     user.delete()
-                    messages.success(request, 'deposit successful by ' + user.username)
+                    messages.success(request, 'deposit successful and no bonus by ' + user.username)
                     return redirect('deposited_amount')
+            else:
+                # delete the deposit after deposit
+                user.delete()
+                messages.success(request, 'deposit successful by ' + user.username)
+                return redirect('deposited_amount')
         else:
             # delete the deposit after deposit
             user.delete()
