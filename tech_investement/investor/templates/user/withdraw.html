@@ -13,14 +13,17 @@
 			</div>
 		{% elif message.tags == 'error' %}
 			<div class="alert alert-danger" role="alert">
-				{{ message }}, <a href="/withdraw_status/" class="close">view status</a>
+				{{ message }}, <a href="/withdraw_status/" class="close">view transactions history</a>
 
 			</div>
 		{% endif %}
 		{% endfor %}
 	{% endif %}
 </div>
+<div>
+	<h3>Balance: {{balance}}</h3>
 
+</div>
 
 	<h1>Withdraw</h1>
 	<form action="{% url 'withdraw' %}" method="post">
