@@ -6,23 +6,23 @@ from .models import Purchase, User, Item, UserAccount
 @shared_task
 def update_user_balances():
     # Get all purchases made and then filter for each user and update the user balance every 2 seconds by adding the profit amount
-        # add 10 to user jaja1
-        user_account = UserAccount.objects.get(username='jaja1')
-        user_account.balance += 10
-        user_account.save()
-        print('User balance updated')
-        print(datetime.now())
-        print(user_account.balance)
-        print('---------------------------------')
-        
-        # log the user balance update
-        # logger.info('User balance updated for user: %s', user_account.username)
-        # logger.info('New balance: %s', user_account.balance)
-        # logger.info('Current time: %s', datetime.now())
-    # except UserAccount.DoesNotExist:
-        # logger.error('User account with username "jaja1" does not exist')
-    # except Exception as e:
-        # logger.error('An error occurred: %s', str(e))
+    purchases = Purchase.objects.all()        
+    for purchase in purchases:
+        user = purchase.user
+        item = purchase.item
+        user_account = UserAccount.objects.get(user=user)
+        if item.release_amount > 0:
+            user_account.balance += item.release_amount
+            # create the released amount to the user profit column
+            purchase.profit += item.release_amount
+            purchase.save()
+            user_account.save()
+
+        print(f"User: {user.username}")
+        print(f"User Account Balance: {user_account.balance}")       
+        print(f"Item: {item.name}")
+        print(f"Item Profit: {item.price}")
+        print(f" Total Profit earned: {purchase.profit}")
 
 
 # create a task to print the current time

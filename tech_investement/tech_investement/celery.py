@@ -21,7 +21,7 @@ app.autodiscover_tasks()
 app.conf.beat_schedule = {
     'update-user-balances-every-2 seconds': {
         'task': 'investor.tasks.update_user_balances',
-        'schedule': 2,  # Run every minute
+        'schedule': 10,  # Run every minute
     },
 }
 
