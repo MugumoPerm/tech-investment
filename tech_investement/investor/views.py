@@ -131,6 +131,12 @@ def dashboard(request):
     # get number of purchased items
     purchased_items = Purchase.objects.filter(user=user_profile)
     purchased_items_count = len(purchased_items)
+    # get total profit earned
+    total_profit = 0
+    for item in purchased_items:
+        total_profit += item.profit
+    total_profit = "{:,.2f}".format(total_profit)
+
     
     # get total withdraws money
     withdraws = Withdrawal.objects.filter(username=request.user.username)
@@ -140,7 +146,9 @@ def dashboard(request):
         withdraws_count += withdraw.withdrawn
     withdraws_count = "{:,.2f}".format(withdraws_count)
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'products': [100, 200, 30, 40, 500], 'assets': assets}
+
+
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'total_profit':total_profit,'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
@@ -521,6 +529,7 @@ def make_withdraw(request, id):
 
 @csrf_exempt
 def withdraw_request(request):
+    balance = UserAccount.objects.get(username=request.user.username).balance
     form = withdraw_form()
     if request.method == 'POST':
         form = withdraw_form(request.POST)
@@ -530,8 +539,6 @@ def withdraw_request(request):
             confirmation_name = form.cleaned_data['confirmation_name']
             #first check if the user has already requested for a withdrawal
             current_date = timezone.now()
-            print('current date', current_date.weekday())
-            print('current date', current_date)
             if current_date.weekday() >= 5:
                 messages.error(request, "Withdrawals are done on weekdays only")
                 return redirect('withdraw')
@@ -553,7 +560,7 @@ def withdraw_request(request):
                 withdraw.save()
                 messages.success(request, 'withdrawal request successful')
                 return redirect('withdraw_status')
-    context = {'form': form}
+    context = {'form': form, 'balance': balance}
     return render(request, 'user/withdraw.html', context)
 
 def withdraw_status(request):
@@ -595,7 +602,7 @@ def purchase_item(request, id):
         user.balance -= items.price
         user.save()
         # save the purchase
-        purchase = Purchase(user=user_profile, item=items, price=items.price,profit=items.release_amount , title=items.title, description=items.description, image=items.image.url)
+        purchase = Purchase(user=user_profile, item=items, price=items.price, release_amount=items.release_amount , title=items.title, description=items.description, image=items.image.url)
         purchase.save()
         messages.success(request, 'purchased successful')
         return redirect('purchase_success',id=id)
@@ -610,7 +617,12 @@ def purchase_success(request, id):
 
 def purchased_items(request):
     purchases = Purchase.objects.filter(user=request.user.profile)
-    return render(request, 'assets/purchased_items.html', {'purchases': purchases})
+    profit = 0
+    for purchase in purchases:
+        profit += purchase.profit
+    profit = "{:,.2f}".format(profit)
+
+    return render(request, 'assets/purchased_items.html', {'purchases': purchases, 'profit': profit})
 
 # ***************recommendation***************
 def recommended_users(request):
