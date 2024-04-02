@@ -18,10 +18,11 @@ app.config_from_object('django.conf:settings', namespace='CELERY')
 app.autodiscover_tasks()
 
 # Define periodic tasks
+# Define a periodic task to run update_user_balances daily at midnight
 app.conf.beat_schedule = {
     'update-user-balances-every-2 seconds': {
         'task': 'investor.tasks.update_user_balances',
-        'schedule': 10,  # Run every minute
+        'schedule': crontab(hour=0, minute=0),  # Run every day at midnight
     },
 }
 

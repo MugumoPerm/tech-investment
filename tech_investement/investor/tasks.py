@@ -6,7 +6,10 @@ from .models import Purchase, User, Item, UserAccount
 @shared_task
 def update_user_balances():
     # Get all purchases made and then filter for each user and update the user balance every 2 seconds by adding the profit amount
-    purchases = Purchase.objects.all()        
+    # Get all purchases made in the last 24 hours
+    yesterday = datetime.now() - timedelta(days=1)
+    purchases = Purchase.objects.filter(purchase_date__gte=yesterday)
+
     for purchase in purchases:
         user = purchase.user
         item = purchase.item
