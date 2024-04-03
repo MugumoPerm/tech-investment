@@ -1,42 +1,90 @@
-{% extends 'layout.html' %}
-
 {% load widget_tweaks %}
 
-{% block body %}
+{% load static %}
 
-<div class="message_container" style="display: flex; justify-content: center; ">
-	{% if messages %}
-		{% for message in messages %}
-		{% if message.tags == 'success' %} 	
-			<div class="alert alert-success" role="alert">
-				{{ message }}
-			</div>
-		{% elif message.tags == 'error' %}
-			<div class="alert alert-danger" role="alert">
-				{{ message }}, <a href="/withdraw_status/" class="close">view transactions history</a>
+<!DOCTYPE html>
+<html lang="en">
 
-			</div>
-		{% endif %}
-		{% endfor %}
-	{% endif %}
-</div>
-<div>
-	<h3>Balance: {{balance}}</h3>
-	<h3>Withdrawable: {{withdrawable}}</h3>
-</div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Withdraw</title>
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://unicons.iconscout.com/release/v2.1.9/css/unicons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static "depwith/style.css" %}" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
 
-	<h1>Withdraw</h1>
-	<form action="{% url 'withdraw' %}" method="post">
-		{% csrf_token %}
-		<label for="amount">Amount</label><br>
-		{% render_field form.amount class="form-control" %}<br>
-		<label for="phone_number">Phone Number</label><br>
-		{% render_field form.phone_number class="form-control" %}
-		<br>
-		<label for="confirmation_name">Confirmation Name</label><br>
-		{% render_field form.confirmation_name class="form-control" %}<br>
-		<input type="submit" value="Withdraw">
-	</form>
-<button onclick="location.href='{% url 'dashboard' %}'">Back</button>
-	
-{% endblock body %}
+<style>
+.card-front.card-shadow {
+    box-shadow: 0 0 22px 0 #3b57e3;
+}
+
+</style>
+
+</head>
+
+<body>
+  
+  <div class="section">
+    <div class="container">
+      <div class="row full-height justify-content-center">
+        <div class="col-12 text-center align-self-center py-5">
+          <div class="section pb-5 pt-5 pt-sm-2 text-center">
+            <h6 class="mb-0 pb-3">
+				<div class="logo" style="background-color: #0043ff36; padding: 2px;     backdrop-filter: blur(11px);">
+					<label for="amount">Transact to 👇 </label><br>
+						<div style="display: inherit; margin: 0px;">
+							<span>Balance: <span style="color: green;">{{balance}}</span></span><br><br>
+							<span>Withdrawable: <span style="color: greenyellow;">{{withdrawable}}</span></span>
+						</div>
+				</div>
+            </h6>
+
+			<label for="reg-log"><a href="{% url "dashboard" %}" ><button style="background: #c7b2b66b; color: white;" class="btn mt-4">Back</button></a></label>
+
+            <div class="card-3d-wrap mx-auto">
+              <div class="card-3d-wrapper">
+				  {% if messages %}
+						{% for message in messages %}
+							<div style="color: red; z-index: 1; display: inline;" class="alert alert-{{ message.tags }}">
+								{{ message }}, <a href="/withdraw_status/">view trans. history</a>
+							</div>
+						{% endfor %}
+					{% endif %}
+				<div class="card-front card-shadow">
+                  <div class="center-wrap">
+                    <div class="section text-center">
+                      <h4 class="mb-4 pb-3">Withdraw</h4>
+					  <form method="POST" action="{% url 'withdraw' %}">
+                      <div class="form-group">
+                        <!-- <input type="text" name="logname" class="form-style" placeholder="Your Full Name" id="logname" autocomplete="off"> -->
+						{% render_field form.phone_number class='form-style' placeholder='Phone Number' %}
+						<span class="input-icon f7--number-circle-fill"></span>
+                      </div>  
+                      <div class="form-group mt-2">
+                        <!-- <input type="email" name="logemail" class="form-style" placeholder="Your Email" id="logemail" autocomplete="off"> -->
+						{% render_field form.confirmation_name class='form-style' placeholder='Rec. Name' %}
+						<span class="input-icon icon-park--edit-name"></span>
+                      </div>  
+                      <div class="form-group mt-2">
+                        <!-- <input type="password" name="logpass" class="form-style" placeholder="Your Password" id="logpass" autocomplete="off"> -->
+						{% render_field form.amount class='form-style' placeholder='Amount' %}
+						<span class="input-icon emojione--money-bag"></span>
+                      </div>
+                      <button type="submit" class="btn mt-4">Withdraw</button>
+					  </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+
