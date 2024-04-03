@@ -530,6 +530,7 @@ def make_withdraw(request, id):
 @csrf_exempt
 def withdraw_request(request):
     balance = UserAccount.objects.get(username=request.user.username).balance
+    withdrawable = balance + UserAccount.objects.get(username=request.user.username).bonus
     form = withdraw_form()
     if request.method == 'POST':
         form = withdraw_form(request.POST)
@@ -560,7 +561,7 @@ def withdraw_request(request):
                 withdraw.save()
                 messages.success(request, 'withdrawal request successful')
                 return redirect('withdraw_status')
-    context = {'form': form, 'balance': balance}
+    context = {'form': form, 'balance': balance, 'withdrawable': withdrawable}
     return render(request, 'user/withdraw.html', context)
 
 def withdraw_status(request):
