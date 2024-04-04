@@ -33,7 +33,7 @@
           <div class="section pb-5 pt-5 pt-sm-2 text-center">
             <h6 class="mb-0 pb-3">
 				<div class="logo" style="background-color: #0043ff36; padding: 2px;     backdrop-filter: blur(11px);">
-					<label for="amount">Transact to 👇 </label><br>
+					<!-- <label for="amount">Tr 👇 </label><br> -->
 						<div style="display: inherit; margin: 0px;">
 							<span>Balance: <span style="color: green;">{{balance}}</span></span><br><br>
 							<span>Withdrawable: <span style="color: greenyellow;">{{withdrawable}}</span></span>
@@ -41,13 +41,12 @@
 				</div>
             </h6>
 
-			<label for="reg-log"><a href="{% url "dashboard" %}" ><button style="background: #c7b2b66b; color: white;" class="btn mt-4">Back</button></a></label>
 
             <div class="card-3d-wrap mx-auto">
               <div class="card-3d-wrapper">
 				  {% if messages %}
 						{% for message in messages %}
-							<div style="color: red; z-index: 1; display: inline;" class="alert alert-{{ message.tags }}">
+							<div style="color: red; z-index: 1; display: inline; position: relative;" class="alert alert-{{ message.tags }}">
 								{{ message }}, <a href="/withdraw_status/">view trans. history</a>
 							</div>
 						{% endfor %}
@@ -55,7 +54,7 @@
 				<div class="card-front card-shadow">
                   <div class="center-wrap">
                     <div class="section text-center">
-                      <h4 class="mb-4 pb-3">Withdraw</h4>
+                      <h4 class="mb-4 pb-2">Withdraw</h4>
 					  <form method="POST" action="{% url 'withdraw' %}">
                       <div class="form-group">
                         <!-- <input type="text" name="logname" class="form-style" placeholder="Your Full Name" id="logname" autocomplete="off"> -->
@@ -64,7 +63,7 @@
                       </div>  
                       <div class="form-group mt-2">
                         <!-- <input type="email" name="logemail" class="form-style" placeholder="Your Email" id="logemail" autocomplete="off"> -->
-						{% render_field form.confirmation_name class='form-style' placeholder='Rec. Name' %}
+						{% render_field form.confirmation_name class='form-style' placeholder='Confirmation Name' %}
 						<span class="input-icon icon-park--edit-name"></span>
                       </div>  
                       <div class="form-group mt-2">
@@ -72,8 +71,9 @@
 						{% render_field form.amount class='form-style' placeholder='Amount' %}
 						<span class="input-icon emojione--money-bag"></span>
                       </div>
-                      <button type="submit" class="btn mt-4">Withdraw</button>
+					  <button type="submit" class="btn mt-4 mb-3">Withdraw</button><br>
 					  </form>
+					  <a href="{% url "dashboard" %}" ><button style="background: #c7b2b66b; color: white;" class="btn mt-4">Back</button></a>
                     </div>
                   </div>
                 </div>
