@@ -35,9 +35,6 @@
 				</div>
             </h6>
 
-            <!-- <input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/> -->
-			<label for="reg-log"><a href="{% url "dashboard" %}" ><button style="background: #c7b2b66b; color: white;" class="btn mt-4">Back</button></a></label>
-
             <div class="card-3d-wrap mx-auto">
               <div class="card-3d-wrapper">
 				  {% if messages %}
@@ -69,6 +66,7 @@
                       </div>
                       <button type="submit" class="btn mt-4">Deposit</button>
 					  </form>
+					  <a href="{% url "dashboard" %}" ><button style="background: #c7b2b66b; color: white;" class="btn mt-4">Back</button></a>
                     </div>
                   </div>
                 </div>
