@@ -1,13 +1,7 @@
-from __future__ import absolute_import, unicode_literals
-from celery import shared_task
-from datetime import datetime, timedelta
 from .models import Purchase, User, Item, UserAccount
 
-@shared_task
 def update_user_balances():
-    # Get all purchases made and then filter for each user and update the user balance every 2 seconds by adding the profit amount
-    # Get all purchases made in the last 24 hours
-    yesterday = datetime.now() - timedelta(days=1)
+
     purchases = Purchase.objects.filter(purchase_date__gte=yesterday)
 
     for purchase in purchases:
@@ -24,14 +18,9 @@ def update_user_balances():
         print(f"User: {user.username}")
         print(f"User Account Balance: {user_account.balance}")       
         print(f"Item: {item.name}")
-        print(f"Item Profit: {item.price}")
+        print(f"Item Profit: {item.release_amount}")
         print(f" Total Profit earned: {purchase.profit}")
 
 
-# create a task to print the current time
-@shared_task
-def print_time():
-    print("jesus is lord")
-    
 
 
