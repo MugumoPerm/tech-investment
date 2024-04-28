@@ -119,6 +119,8 @@ def dashboard(request):
     recommended_users = len(recommended_users)
     bonus = "{:,.2f}".format(UserAccount.objects.get(username=request.user).bonus)
     balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user).balance)
+    total_balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user).balance + UserAccount.objects.get(username=request.user).bonus)
+
     if UserProfile.objects.get(username=request.user.username):
         user_profile = UserProfile.objects.get(username=request.user.username)
     else:
@@ -146,7 +148,7 @@ def dashboard(request):
 
 
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'total_profit':total_profit,'products': [100, 200, 30, 40, 500], 'assets': assets}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':total_balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'total_profit':total_profit,'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
