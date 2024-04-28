@@ -22,8 +22,6 @@ from .models import UserProfile, UserAccount, Transaction_ids, Deposit, Withdraw
 # import forms
 from .forms import CreateUserForm, UserProfileForm, loginForm, reset_passwordForm, deposit_form, withdraw_form, searchForm, StkpushForm, transactions_id_form, letterForm, user_deposit_form
 
-
-
 # Create your views here.
 
 #Admin
@@ -121,6 +119,8 @@ def dashboard(request):
     recommended_users = len(recommended_users)
     bonus = "{:,.2f}".format(UserAccount.objects.get(username=request.user).bonus)
     balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user).balance)
+    total_balance = "{:,.2f}".format(UserAccount.objects.get(username=request.user).balance + UserAccount.objects.get(username=request.user).bonus)
+
     if UserProfile.objects.get(username=request.user.username):
         user_profile = UserProfile.objects.get(username=request.user.username)
     else:
@@ -148,7 +148,7 @@ def dashboard(request):
 
 
 
-    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'total_profit':total_profit,'products': [100, 200, 30, 40, 500], 'assets': assets}
+    context = {'recommended_users': recommended_users, 'referral_bonus': bonus, 'user': request.user, 'user_profile': user_profile, 'balance':total_balance, 'purchased_items': purchased_items_count  ,'withdraws': withdraws_count ,'total_profit':total_profit,'products': [100, 200, 30, 40, 500], 'assets': assets}
     return render(request, 'user/dashboard.html', context)
 
 def users(request):
@@ -598,9 +598,16 @@ def purchase_item(request, id):
     items = Item.objects.get(pk=id)
     user = UserAccount.objects.get(username=request.user)
     user_profile = UserProfile.objects.get(username=request.user)
-    if user.balance >= items.price:
-        # deduct the amount from the user account
-        user.balance -= items.price
+    total_balance = user.balance + user.bonus
+    if total_balance >= items.price:
+       # deduct the amount from the user account
+        if user.balance >= items.price:
+            user.balance -= items.price
+            user.save()
+        else:
+            total_balance -= items.price
+            user.balance = 0
+            user.bonus = total_balance
         user.save()
         # save the purchase
         purchase = Purchase(user=user_profile, item=items, price=items.price, release_amount=items.release_amount , title=items.title, description=items.description, image=items.image.url)
