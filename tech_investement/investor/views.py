@@ -596,9 +596,16 @@ def purchase_item(request, id):
     items = Item.objects.get(pk=id)
     user = UserAccount.objects.get(username=request.user)
     user_profile = UserProfile.objects.get(username=request.user)
-    if user.balance >= items.price:
-        # deduct the amount from the user account
-        user.balance -= items.price
+    total_balance = user.balance + user.bonus
+    if total_balance >= items.price:
+       # deduct the amount from the user account
+        if user.balance >= items.price:
+            user.balance -= items.price
+            user.save()
+        else:
+            total_balance -= items.price
+            user.balance = 0
+            user.bonus = total_balance
         user.save()
         # save the purchase
         purchase = Purchase(user=user_profile, item=items, price=items.price, release_amount=items.release_amount , title=items.title, description=items.description, image=items.image.url)
