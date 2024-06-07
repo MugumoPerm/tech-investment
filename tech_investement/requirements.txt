@@ -1,0 +1,6 @@
+django
+django-widget-tweaks
+whitenoise
+celery
+pillow
+django-allauth

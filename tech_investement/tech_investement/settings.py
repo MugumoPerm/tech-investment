@@ -85,21 +85,24 @@ WSGI_APPLICATION = 'tech_investement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+#####################sqlite####################
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+#####################end sqlite####################
+
 
 ############### mysql ################
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'investor',
-#         'USER': 'permo',
+#         'NAME': 'codius',
+#         'USER': 'peekay',
 #         'PASSWORD': 'kali',
-#         'HOST': 'localhost',   # Or the hostname where your MySQL server is running
+#         'HOST': '54.237.50.146',   # Or the hostname where your MySQL server is running
 #         'PORT': '3306',        # Default MySQL port
 #     }
 # }
@@ -110,11 +113,11 @@ DATABASES = {
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.postgresql',
-#         'NAME': 'investor',
-#         'USER': 'permo',
+#         'NAME': 'codiusinvestor',
+#         'USER': 'mike',
 #         'PASSWORD': 'kali',
-#         'HOST': 'localhost',   # Or the hostname where your MySQL server is running
-#         'PORT': '',
+#         'HOST': '54.174.217.224',   # Or the hostname where your MySQL server is running
+#         'PORT': '5432',        # Default MySQL port
 #     }
 # }
 
@@ -159,7 +162,9 @@ USE_TZ = False
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+# STATIC_URL = 'http://54.237.50.146/codius-static/'
+
+STATIC_URL = '~/tech_investement/investor/static/'
 STATIC_ROOT = '~/tech-investment/tech_investement/investor/static'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
